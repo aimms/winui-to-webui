@@ -1,0 +1,30 @@
+## ams_version=1.0
+
+LibraryModule GeneratedInterfaceIdentifiersLibrary {
+	Prefix: gii;
+	Interface: Public_Section;
+	Property: NoSave;
+	Section Public_Section {
+		Procedure pr_adaptNamesForPresentationInWebUI;
+	}
+	Section Private_Section {
+		Section lib_start_stop_section {
+			Procedure LibraryInitialization;
+			Procedure PostLibraryInitialization {
+				Body: {
+					pr_adaptNamesForPresentationInWebUI();
+				}
+			}
+			Procedure PreLibraryTermination {
+				Body: {
+					return 1;
+				}
+			}
+			Procedure LibraryTermination {
+				Body: {
+					return 1;
+				}
+			}
+		}
+	}
+}

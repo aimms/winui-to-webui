@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "0287-w2wpy"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13.14"
+dependencies = [
+  "aimmspy",
+  "python-slugify",
+  "PySide6",
+  "lxml",
+  "pandas",]
+
+[tool.setuptools]
+# Alle losse modules die je wilt installeren
+py-modules = [
+  "main", "cli", "gui",
+  "aimms_slug", 
+  "converter_logging",
+  "identifier_element_text",
+  "manipulate_main_model",
+  "modeledit_aimmspy",
+  "modeledit_aimmspy2",
+  "tools", 
+  "w2w_types",
+  "web_page",
+  "web_page_types",
+  "win_barchart",
+  "win_button",
+  "win_classic_table",
+  "win_composite_table",
+  "win_document_viewer",
+  "win_elemselec",
+  "win_expression",
+  "win_linechart",
+  "win_object",
+  "win_object_tools",
+  "win_page",
+  "win_pagemanager",
+  "win_picture",
+  "win_pivot_table",
+  "win_procedure",
+  "win_scalar",
+  "win_tabbed_page",
+  "win_text",
+  "winui_to_webui", 
+  # voeg overige .py-bestanden toe die nodig zijn
+]
+
+[tool.uv.workspace]
+members = [
+    "scripts",
+]
+
+[project.scripts]
+# Naam van de executable = "module.submodule:functie"
+w2w_main = "main:main_entry_point"
+w2w_cli = "cli:cli_entry_point"
+w2w_gui = "gui:gui_entry_point"

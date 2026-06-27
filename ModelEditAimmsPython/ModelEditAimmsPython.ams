@@ -1,0 +1,406 @@
+## ams_version=1.0
+
+LibraryModule ModelEditAimmsPython {
+	Prefix: meap;
+	Interface: Public_Section;
+	Section Public_Section {
+		Section Base_Layer {
+			Set s_publicIdentifiers {
+				SubsetOf: AllIdentifiers;
+				Definition: Public_Section;
+			}
+			StringParameter sp_id;
+			StringParameter sp_attrText;
+			StringParameter sp_attrName;
+			Section Model_Query {
+				Section Atribute_to_String_Declarations {
+					Procedure pr_attributeToString {
+						Body: {
+							
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							_ep_attr := StringToElement( AllAttributeNames, sp_attrName, create: 0);
+							if _ep_id and _ep_attr then
+								sp_attrText := AttributeToString( _ep_id, _ep_attr );
+							else
+								sp_attrText := "<Error>" ;
+								raise warning formatString("Attribute \"%s\" of undeclared \"%s\" unknown", sp_attrName, sp_id);
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+						ElementParameter _ep_attr {
+							Range: AllAttributeNames;
+						}
+					}
+				}
+				Section Declared_subset_declarations {
+					StringParameter sp_subsetName;
+					StringParameter sp_superSetName;
+					Parameter bp_isSubset {
+						Range: binary;
+					}
+					Procedure pr_declaredSubset {
+						Body: {
+							_ep_subset   := StringToElement( AllIdentifiers, sp_subsetName,   create: 0);
+							_ep_superset := StringToElement( AllIdentifiers, sp_supersetName, create: 0);
+							if _ep_subset and _ep_superset then
+								bp_isSubset := DeclaredSubset( _ep_subset, _ep_superset );
+							else
+								bp_isSubset := 0 ;
+							endif ;
+						}
+						ElementParameter _ep_subset {
+							Range: AllIdentifiers;
+						}
+						ElementParameter _ep_superset {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Identifier_Domain_Index_Declarations {
+					Parameter p_indexPos;
+					StringParameter sp_indexName;
+					Procedure pr_domainIndex {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							if _ep_id then
+								sp_indexName := formatString("%e",domainIndex( _ep_id, p_indexPos ));
+							else
+								sp_type := "undeclared identifier" ;
+								raise warning formatString("The %i index of undeclared \"%s\" is unknown", p_indexPos, sp_id);
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Identifier_Dimension_Declarations {
+					Parameter p_dim {
+						Comment: "Set by pr_getDim.";
+					}
+					Procedure pr_getDim {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							if _ep_id then
+								p_dim := IdentifierDimension( _ep_id );
+							else
+								p_dim := -1 ;
+								raise warning formatString("Dimension of undeclared \"%s\" unknown", sp_id);
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Identifier_Element_Range_Declarations {
+					StringParameter sp_elementRange;
+					Procedure pr_identifierElementRange {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							if _ep_id then
+								_ep_elementRange := IdentifierElementRange( _ep_id );
+								if _ep_elementRange then
+									sp_elementRange := formatString("%e", _ep_elementRange);
+								else
+									sp_elementRange := "" ;
+								endif ;
+							else
+								sp_elementRange := "" ;
+								raise warning formatString("Element range of undeclared \"%s\" unknown", sp_id);
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+						ElementParameter _ep_elementRange {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Identifier_Text_Declarations {
+					StringParameter sp_text;
+					Procedure pr_getText {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							if _ep_id then
+								sp_text := IdentifierText( _ep_id );
+							else
+								sp_text := "undeclared identifier" ;
+								raise warning formatString("The text of undeclared \"%s\" is unknown", sp_id);
+							endif ;
+							
+							return 1 ;
+						}
+						Comment: "https://documentation.aimms.com/functionreference/predefined-identifiers/language-related-identifiers/allidentifiertypes.html";
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Identifier_Type_Declarations {
+					StringParameter sp_type;
+					Procedure pr_getType {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							if _ep_id then
+								_ep_type := IdentifierType( _ep_id );
+								if _ep_type then
+									sp_type := formatString("%e", _ep_type);
+								else
+									sp_type := "" ;
+								endif ;
+							else
+								sp_type := "undeclared identifier" ;
+								raise warning formatString("The type of undeclared \"%s\" is unknown", sp_id);
+							endif ;
+							
+							return 1 ;
+						}
+						Comment: "https://documentation.aimms.com/functionreference/predefined-identifiers/language-related-identifiers/allidentifiertypes.html";
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+						ElementParameter _ep_type {
+							Range: AllIdentifierTypes;
+						}
+					}
+				}
+				Section Index_Range_Declarations {
+					StringParameter sp_indexRange;
+					Procedure pr_indexRange {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							if _ep_id then
+								if IdentifierType(_ep_id) = 'Index' then
+									_ep_indexRange := indexRange( _ep_id );
+									if _ep_indexRange then
+										sp_indexRange := formatString("%e", _ep_indexRange);
+									else
+										sp_indexRange := "" ;
+									endif ;
+								else
+									sp_indexRange := "" ;
+								endif ;
+							else
+								sp_indexRange := "undeclared identifier" ;
+								raise warning formatString("The index range of undeclared \"%s\" is unknown", sp_id);
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+						ElementParameter _ep_indexRange {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+			}
+			Section Model_Edit {
+				Section Me_Compile_Declarations {
+					StringParameter sp_compilermessage;
+					Procedure pr_compile {
+						Body: {
+							block 
+								sp_compilermessage := "" ;
+								pr_workcompile();
+							onerror _ep_err do
+								if sp_compilermessage then
+									sp_compilermessage += "\n" ;
+								endif ;
+								sp_compilermessage += formatString("%e: %s",
+									errh::Severity(_ep_err),
+									errh::Message(_ep_err));
+								errh::MarkAsHandled(_ep_err);
+							endblock ;
+							return 1 ;
+						}
+						ElementParameter _ep_err {
+							Range: errh::PendingErrors;
+						}
+					}
+					Procedure pr_workcompile {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							if _ep_id then
+								me::compile( _ep_id );
+							else
+								raise warning formatString("Compilation of undeclared \"%s\" ignored", sp_id);
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Me_Create_Declarations {
+					StringParameter sp_newIdName {
+						Comment: "The name wrt to the module in which the parent is, ie. without prefixes.";
+					}
+					StringParameter sp_newIdType;
+					StringParameter sp_newIdParent;
+					Parameter p_newIdPos;
+					StringParameter sp_createdId {
+						Comment: "The fully qualified name (ie with all prefixes)";
+					}
+					Procedure pr_create {
+						Body: {
+							_ep_newType := StringToElement( AllIdentifierTypes, sp_newIdType, create:0);
+							if not _ep_newType then
+								raise warning formatString("me::create(): new type \"%s\" invalid", sp_newIdType);
+								return 0 ;
+							endif ;
+							
+							_ep_parentId := StringToElement( AllSymbols, sp_newIdParent, create: 0 );
+							if not _ep_parentId then
+								raise warning formatString("me::create(): Parent Id \"%s\" undeclared", sp_newIdParent);
+								return 0 ;
+							endif ;
+							
+							_ep_newId := me::Create( sp_newIdName, _ep_newType, _ep_parentId, p_newIdPos );
+							if _ep_newId then
+								sp_createdId := formatString("%e", _ep_newId );
+							else
+								sp_createdId := formatString("Error creating new id for \"%s\"", sp_newIdName);
+								raise warning formatString("me::create(): Unable to create new id for string: \"%s\"", sp_newIdName);
+								return 0;
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_newType {
+							Range: AllIdentifierTypes;
+						}
+						ElementParameter _ep_parentId {
+							Range: AllSymbols;
+						}
+						ElementParameter _ep_newId {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Me_Create_Library_Declarations {
+					StringParameter sp_libraryName {
+						Comment: "The library name, wrt MainModel.";
+					}
+					StringParameter sp_prefixName;
+					StringParameter sp_createdLibrary {
+						Comment: "The string in AllIdentifiers identifying the library.";
+					}
+					Procedure pr_createLibrary {
+						Body: {
+							_ep_createdLibrary := me::CreateLibrary(
+								libraryName :  sp_libraryName, 
+								prefixName  :  sp_prefixName);
+							if not _ep_createdLibrary then
+								sp_createdLibrary := formatString("me::CreateLibrary(): Unable to create a runtime library from \"%s\" with prefix \"%s\"", sp_libraryName, sp_prefixName);
+								raise warning sp_createdLibrary ;
+								return 0 ;
+							endif ;
+							
+							sp_createdLibrary := formatString("%e", _ep_createdLibrary);
+							
+							return 1 ;
+						}
+						ElementParameter _ep_createdLibrary {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Me_Export_Node_Declarations {
+					StringParameter sp_exportFilename;
+					Procedure pr_exportNode {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							if _ep_id then
+								me::ExportNode( _ep_id, sp_exportFilename);
+							else
+								raise warning formatString("Exporting of undeclared \"%s\" skipped", sp_id);
+								return 0 ;
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+					}
+				}
+				Section Me_Set_Attribute_Declarations {
+					Procedure pr_setAttribute {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							_ep_attr := StringToElement( AllAttributeNames, sp_attrName, create: 0);
+							display "pr_setAttribute", sp_id, _ep_id, sp_attrName, _ep_attr, sp_attrText, "-----------------------" ;
+							if _ep_id and _ep_attr then
+								me::SetAttribute(
+									runtimeId :  _ep_id, 
+									attr      :  _ep_attr, 
+									txt       :  sp_attrText);  
+							else
+								raise warning formatString("me::SetAttribute() \"%s\" of undeclared \"%s\" unknown", sp_attrName, sp_id);
+								return 0 ;
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+						ElementParameter _ep_attr {
+							Range: AllAttributeNames;
+						}
+					}
+				}
+			}
+		}
+	}
+	Section Private_Section {
+		Section lib_start_stop {
+			Procedure LibraryInitialization {
+				Comment: "Add initialization statements here that do not require any other library being initialized already.";
+			}
+			Procedure PostLibraryInitialization {
+				Comment: {
+					"Add initialization statements here that require another library to be initialized already,
+					or add statements that require the Data Management module to be initialized."
+				}
+			}
+			Procedure PreLibraryTermination {
+				Body: {
+					return 1;
+				}
+				Comment: {
+					"Add termination statements here that require all other libraries to be still alive.
+					Return 1 if you allow the termination sequence to continue.
+					Return 0 if you want to cancel the termination sequence."
+				}
+			}
+			Procedure LibraryTermination {
+				Body: {
+					return 1;
+				}
+				Comment: {
+					"Add termination statements here that do not require other libraries to be still alive.
+					Return 1 to allow the termination sequence to continue.
+					Return 0 if you want to cancel the termination sequence.
+					It is recommended to only use the procedure PreLibraryTermination to cancel the termination sequence and let this procedure always return 1."
+				}
+			}
+		}
+	}
+}

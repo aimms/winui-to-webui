@@ -1,2 +1,8 @@
 log/
 backup/
+logs/
+build/
+dist/
+__pycache__/
+*.pyc
+*.pyo
