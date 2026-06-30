@@ -1,0 +1,10 @@
+[project]
+name = "winscreenshots"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "aimmspy>=26.1.6.1",
+    "pillow",
+]
+[tool.uv]
+python-preference = "only-managed"
