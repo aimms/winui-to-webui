@@ -30,7 +30,7 @@ LibraryModule WinScreenshots {
 					_sp_pageName := formatString("%e", i_page);
 					PageOpen(  _sp_pageName );
 					delay(1);
-					_sp_fn := formatString("\"%s\\%e.png\"", _sp_folder, i_page);
+					_sp_fn := formatString("\"%s/%e.png\"", _sp_folder, i_page);
 					_sp_arg := formatString("make_screenshot(%s)",_sp_fn);
 					py::run_python_statement(_sp_arg);
 					PageClose( _sp_pageName );
