@@ -16,6 +16,9 @@ LibraryModule WinScreenshots {
 		}
 		Procedure pr_doMakeScreenshots {
 			Body: {
+				if FileExists( "data/initial.data" ) then
+					CaseFileLoad( "data/initial.data" );
+				endif ;
 				PageGetAll(
 					page_set          :  s_allPages,
 					IncludePages      :  1,
@@ -28,18 +31,25 @@ LibraryModule WinScreenshots {
 				endif ;
 				for i_page do
 					_sp_pageName := formatString("%e", i_page);
-					PageOpen(  _sp_pageName );
-					delay(1);
-					_sp_fn := formatString("\"%s/%e.png\"", _sp_folder, i_page);
-					_sp_arg := formatString("make_screenshot(%s)",_sp_fn);
-					py::run_python_statement(_sp_arg);
-					PageClose( _sp_pageName );
+					block
+						PageOpen(  _sp_pageName );
+						delay(1);
+						_sp_fn := formatString("\"%s/%e.png\"", _sp_folder, i_page);
+						_sp_arg := formatString("make_screenshot(%s)",_sp_fn);
+						py::run_python_statement(_sp_arg);
+						PageClose( _sp_pageName );
+					onerror ep_err do
+						errh::MarkAsHandled(ep_err);
+					endblock ;
 				endfor ;
 			}
 			StringParameter _sp_pageName;
 			StringParameter _sp_arg;
 			StringParameter _sp_folder;
 			StringParameter _sp_fn;
+			ElementParameter ep_err {
+				Range: errh::PendingErrors;
+			}
 		}
 		Section lib_start_stop {
 			Procedure LibraryInitialization {
