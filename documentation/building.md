@@ -14,6 +14,15 @@ These instructions produce `dist\w2w.exe` — a self-contained Windows executabl
 
 Building from the project's own `.venv` (rather than a system-wide Python) keeps the build reproducible and matches how the project is normally run/tested (`uv run ...`, `scripts/run_example.py`, etc.).
 
+## Quick build
+
+```
+.\scripts\clean_w2w.ps1
+.\scripts\build_w2w.ps1
+```
+
+`build_w2w.ps1` runs `uv sync` first, so a missing or out-of-date `.venv` is created/updated automatically, and installs PyInstaller into it if needed. The manual steps below do the same thing by hand.
+
 ## Build steps
 
 1. Open a terminal and navigate to the repository root:
