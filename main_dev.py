@@ -26,8 +26,8 @@ def main_entry_point() -> None:
 
     # take an example
     # Network Object examples - w2w0035: x/y coordinates (diagram), w2w0036: latitude/longitude (map):
-    project_folder = os.path.join( 'examples', 'w2w0009', 'work' )
-    project_name   = 'w2w0009'
+    project_folder = os.path.join( 'examples', 'w2w0001', 'work' )
+    project_name   = 'w2w0001'
  
     # 01datareconciliation does not have _Example Style Library, 02datareconciliation does.
     # project_folder = os.path.join( 'applications', '02datareconciliation', 'work' )
