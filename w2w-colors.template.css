@@ -1,0 +1,7 @@
+/* Handling color aliceblue */
+.aimms-widget.tag-table-widget .annotation-color-aliceblue { background-color: aliceblue; }
+.aimms-widget.tag-linechart    .annotation-color-aliceblue { stroke: aliceblue; }
+.aimms-widget.tag-linechart    circle.annotation-color-aliceblue { fill: aliceblue; stroke: aliceblue; }
+.aimms-widget.tag-barchart     .annotation-color-aliceblue { fill: aliceblue; }
+
+

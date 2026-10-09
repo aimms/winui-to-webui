@@ -44,7 +44,7 @@ LibraryModule ModelEditAimmsPython {
 					}
 					Procedure pr_declaredSubset {
 						Body: {
-							_ep_subset   := StringToElement( AllIdentifiers, sp_subsetName,   create: 0);
+							_ep_subset	 := StringToElement( AllIdentifiers, sp_subsetName,	  create: 0);
 							_ep_superset := StringToElement( AllIdentifiers, sp_supersetName, create: 0);
 							if _ep_subset and _ep_superset then
 								bp_isSubset := DeclaredSubset( _ep_subset, _ep_superset );
@@ -82,7 +82,7 @@ LibraryModule ModelEditAimmsPython {
 				}
 				Section Identifier_Dimension_Declarations {
 					Parameter p_dim {
-						Comment: "Set by pr_getDim.";
+						Comment: "Set by pr_getDim or pr_isIdentifier";
 					}
 					Procedure pr_getDim {
 						Body: {
@@ -98,6 +98,26 @@ LibraryModule ModelEditAimmsPython {
 						}
 						ElementParameter _ep_id {
 							Range: AllIdentifiers;
+						}
+					}
+					Procedure pr_isIdentifier {
+						Body: {
+							_ep_id := StringToElement( AllSymbols, sp_id, create: 0);
+							if _ep_id then
+								if _ep_id in AllIdentifiers then
+									p_dim := 1 ;
+								else
+									p_dim := 0 ;
+								endif ;
+							else
+								! Allowing undeclared identifiers to be identifiers.
+								p_dim := 1 ;
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllSymbols;
 						}
 					}
 				}
@@ -305,7 +325,7 @@ LibraryModule ModelEditAimmsPython {
 						Body: {
 							_ep_createdLibrary := me::CreateLibrary(
 								libraryName :  sp_libraryName, 
-								prefixName  :  sp_prefixName);
+								prefixName	:  sp_prefixName);
 							if not _ep_createdLibrary then
 								sp_createdLibrary := formatString("me::CreateLibrary(): Unable to create a runtime library from \"%s\" with prefix \"%s\"", sp_libraryName, sp_prefixName);
 								raise warning sp_createdLibrary ;
@@ -348,9 +368,33 @@ LibraryModule ModelEditAimmsPython {
 							display "pr_setAttribute", sp_id, _ep_id, sp_attrName, _ep_attr, sp_attrText, "-----------------------" ;
 							if _ep_id and _ep_attr then
 								me::SetAttribute(
-									runtimeId :  _ep_id, 
-									attr      :  _ep_attr, 
-									txt       :  sp_attrText);  
+									runtimeId :	 _ep_id, 
+									attr	  :	 _ep_attr, 
+									txt		  :	 sp_attrText);	
+							else
+								raise warning formatString("me::SetAttribute() \"%s\" of undeclared \"%s\" unknown", sp_attrName, sp_id);
+								return 0 ;
+							endif ;
+							
+							return 1 ;
+						}
+						ElementParameter _ep_id {
+							Range: AllIdentifiers;
+						}
+						ElementParameter _ep_attr {
+							Range: AllAttributeNames;
+						}
+					}
+					Procedure pr_setAnnotation {
+						Body: {
+							_ep_id := StringToElement( AllIdentifiers, sp_id, create: 0);
+							! _ep_attr := StringToElement( AllAttributeNames, sp_attrName, create: 0);
+							display "pr_setAnnotation", sp_id, _ep_id, sp_attrName, sp_attrText, "-----------------------" ;
+							if _ep_id and _ep_attr then
+								me::SetAnnotation(
+									runtimeId :	 _ep_id, 
+									key 	  :	 sp_attrName, 
+									value	  :	 sp_attrText);	
 							else
 								raise warning formatString("me::SetAttribute() \"%s\" of undeclared \"%s\" unknown", sp_attrName, sp_id);
 								return 0 ;

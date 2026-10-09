@@ -3,12 +3,12 @@
 block_cipher = None
 
 a = Analysis(
-    ['py/main.py'],
-    pathex=['py'],
+    ['main.py'],
+    pathex=[r'C:\u\s\nirvana\0287dev\0287-w2wpy'],
     binaries=[],
     datas=[
-        ('GeneratedInterfaceIdentifiersLibrary', 'GeneratedInterfaceIdentifiersLibrary'),
         ('ModelEditAimmsPython', 'ModelEditAimmsPython'),
+        ('w2w-colors.template.css', '.'),
     ],
     hiddenimports=[
         'aimmspy',
@@ -16,12 +16,18 @@ a = Analysis(
         'lxml.etree',
         'pandas',
         'slugify',
+        # slugify picks its transliteration backend via importlib.import_module() at
+        # runtime, so PyInstaller's static analysis can't see either of these.
+        'text_unidecode',
+        'unidecode',
         'PySide6',
         'winui_to_webui',
         'win_pagemanager',
         'win_page',
         'win_object',
         'win_object_tools',
+        'win_layout',
+        'win_pivot_state',
         'win_button',
         'win_scalar',
         'win_text',
@@ -35,6 +41,7 @@ a = Analysis(
         'win_pivot_table',
         'win_barchart',
         'win_linechart',
+        'win_color',
         'win_tabbed_page',
         'web_page',
         'web_page_types',
@@ -43,6 +50,8 @@ a = Analysis(
         'modeledit_aimmspy2',
         'manipulate_main_model',
         'identifier_element_text',
+        'ams_file_editor',
+        'gii_module',
         'aimms_slug',
         'converter_logging',
         'tools',

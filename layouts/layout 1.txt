@@ -1,0 +1,26 @@
+{
+	"componentName": "Grid",
+	"props": {
+		"gridTemplateColumns": "1fr",
+		"gridTemplateRows": "1fr 1fr",
+		"gridTemplateAreas": "\"area-a\" \"area-b\""
+	},
+	"items": [
+		{
+			"componentName": "WidgetArea",
+			"props": {
+				"gridArea": "area-a",
+				"name": "Area A",
+				"gridAutoFlow": "column"
+			}
+		},
+		{
+			"componentName": "WidgetArea",
+			"props": {
+				"gridArea": "area-b",
+				"name": "Area B",
+				"gridAutoFlow": "column"
+			}
+		}
+	]
+}
