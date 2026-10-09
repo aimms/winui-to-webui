@@ -10,6 +10,7 @@ __pycache__/
 .venv/
 documentation/active todo.md
 applications/
+notes/
 wheels/
 other AIMMS apps/
 *.egg-info
