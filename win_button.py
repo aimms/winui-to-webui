@@ -7,6 +7,16 @@ import web_page
 import win_object_tools
 from aimmspy.project.project import Project, Model
 
+def _unquote_literal_title(title: str) -> str:
+    """
+    Strip the AIMMS string-literal quotes WinUI stores around a literal button title
+    (``"next"`` -> ``next``), un-escaping doubled quotes inside it (``""`` -> ``"``).
+    A title that is not a quoted literal (e.g. a string parameter reference) is returned as is.
+    """
+    if len(title) >= 2 and title.startswith('"') and title.endswith('"'):
+        return title[1:-1].replace('""', '"')
+    return title
+
 def winpage_button(webui: web_page.WebUI, aimms_model: Model, gii_dict: dict, component_dict:dict, webui_page_dict: dict, page_name: str, winui_table_xml:ET.Element, ancestor_info:dict) -> None:
     """
     Convert a single WinUI button into a WebUI button widget and attach it to the target page.
@@ -41,7 +51,7 @@ def winpage_button(webui: web_page.WebUI, aimms_model: Model, gii_dict: dict, co
 
     for button_child_element in winui_table_xml:
         if button_child_element.tag == "Title":
-            info_dict["title"] = str(button_child_element.text)
+            info_dict["title"] = _unquote_literal_title(str(button_child_element.text))
             # todo, determine if this title is a literal or a string parameter.
         elif button_child_element.tag == "ActionSequence":
             action_sequence = button_child_element
