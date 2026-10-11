@@ -1212,6 +1212,13 @@ class WebUI:
 
         if is_scalar == 0:
             webui_widget_contents["contents.partition"] = { "literal": contents_partition }
+            # A pivot with the identifier set on its rows and nothing on its columns (a list of
+            # identifiers with a single value column) has no column header in WinUI; the WebUI
+            # would show an empty one, headed "Identifier".
+            if (table_v2 and widget_type == 'table' and content_lists_expected.get("colHeader",0) == 1
+                    and not contents_partition["colHeader"]
+                    and "<IDENTIFIER-SET>" in contents_partition.get("rowHeader", [])):
+                webui_widget_contents["header.visibility"] = { "literal": "HIDE_COLUMN_HEADER" }
         webui_widget_contents["name"] = { "literal": widget_name }
         if widget_info_dict.get('store.focus.in','') != '':
             webui_widget_contents['store.focus.in'] = { "literal" : widget_info_dict['store.focus.in'] }
