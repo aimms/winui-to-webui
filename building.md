@@ -1,55 +1,52 @@
 # Building w2w from Source
 
-These instructions produce `dist\w2w.exe` — a self-contained Windows executable that requires no Python installation to run.
+These instructions produce `dist\w2w.exe`, a single-file Windows executable that runs without a Python installation.
 
 ## Prerequisites
 
-- Python 3.13 or later (system-wide install, not a venv)
-- The following packages installed in that Python environment:
+- **Windows** with PowerShell.
+- **[uv](https://docs.astral.sh/uv/)** on your PATH. The build script uses it to create the project's `.venv` with the right Python (3.14, see `.python-version`) and the dependencies pinned in `uv.lock`.
+- **The repository** cloned locally.
 
-  ```
-  pip install pyinstaller lxml aimmspy python-slugify PySide6 pandas
-  ```
+You do not need to install Python packages yourself.
 
-  Alternatively, use the requirements file:
+## Build
 
-  ```
-  pip install -r py/requirements.txt
-  ```
+From the repository root:
 
-- The repository cloned locally
+```
+.\scripts\clean_w2w.ps1
+.\scripts\build_w2w.ps1
+```
 
-## Build steps
+The executable is written to `dist\w2w.exe`.
 
-1. Open a terminal and navigate to the repository root:
-   ```
-   cd C:\path\to\711-winui-to-webui
-   ```
+`build_w2w.ps1`:
+1. Runs `uv sync` to create or update `.venv` from `pyproject.toml` and `uv.lock`.
+2. Installs PyInstaller into `.venv` if it is missing (a build-only tool, not a project dependency). Pass `-SkipDependencyCheck` to skip this check.
+3. Runs PyInstaller with `w2w.spec`, using the `.venv` Python.
 
-2. Delete any previous build output to ensure a clean build:
-   ```
-   Remove-Item -Recurse -Force build, dist
-   ```
+`clean_w2w.ps1` removes `build\` and `dist\`. Run it before every build after adding or upgrading a dependency: PyInstaller caches aggressively and otherwise silently reuses the old bundle.
 
-3. Run PyInstaller with the provided spec file:
-   ```
-   pyinstaller w2w.spec
-   ```
+## Why the .venv matters
 
-4. The executable is written to:
-   ```
-   dist\w2w.exe
-   ```
+The executable must be built with the Python that has the runtime dependencies (`aimmspy`, `lxml`, `pandas`, `PySide6`, ...). Building with a Python that lacks `aimmspy` still succeeds, but the resulting exe fails every conversion with `ModuleNotFoundError: No module named 'aimmspy'`. The build script avoids this by always using the project's `.venv`.
 
 ## What the build bundles
 
 `w2w.spec` configures PyInstaller to:
-- Include all local conversion modules from `py/` as hidden imports
-- Bundle `GeneratedInterfaceIdentifiersLibrary` and `ModelEditAimmsPython` as data — these are copied into each AIMMS project at conversion time
-- Produce a single-file executable
+- Use `main.py` as the entry point.
+- Include all conversion modules as hidden imports. When you add a new module, add it to `hiddenimports` in `w2w.spec`.
+- Bundle `ModelEditAimmsPython` (copied into each project during a conversion) and `w2w-colors.template.css` as data.
+- Produce a single-file console executable.
 
-## Notes
+## Running from source
 
-- Always delete `build\` and `dist\` before rebuilding after installing or upgrading any dependency. PyInstaller caches aggressively and will silently use the old bundle otherwise.
-- The spec file pins the entry point to `py/main.py`. If this changes, update `w2w.spec` accordingly.
-- `py/main_dev.py` is a development entry point with hardcoded example paths and is not part of the build.
+To run the converter without building the exe, use the `.venv` from the repository root and start it from your AIMMS project folder:
+
+```
+cd C:\path\to\your\project
+C:\path\to\711-winui-to-webui\.venv\Scripts\python.exe C:\path\to\711-winui-to-webui\main.py
+```
+
+`main_dev.py` is a development entry point with hardcoded example paths; it is not part of the build.
