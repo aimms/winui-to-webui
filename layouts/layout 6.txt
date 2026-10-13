@@ -1,0 +1,50 @@
+{
+	"componentName": "Grid",
+	"props": {
+		"gridTemplateColumns": "1fr 1fr 1fr 1fr",
+		"gridTemplateRows": "1fr 1fr",
+		"gridTemplateAreas": "\"area-a area-b area-c area-c\" \"area-d area-d area-e area-e\""
+	},
+	"items": [
+		{
+			"componentName": "WidgetArea",
+			"props": {
+				"gridArea": "area-a",
+				"name": "Area A",
+				"gridAutoFlow": "row"
+			}
+		},
+		{
+			"componentName": "WidgetArea",
+			"props": {
+				"gridArea": "area-b",
+				"name": "Area B",
+				"gridAutoFlow": "row"
+			}
+		},
+		{
+			"componentName": "WidgetArea",
+			"props": {
+				"gridArea": "area-c",
+				"name": "Area C",
+				"gridAutoFlow": "column"
+			}
+		},
+		{
+			"componentName": "WidgetArea",
+			"props": {
+				"gridArea": "area-d",
+				"name": "Area D",
+				"gridAutoFlow": "column"
+			}
+		},
+		{
+			"componentName": "WidgetArea",
+			"props": {
+				"gridArea": "area-e",
+				"name": "Area E",
+				"gridAutoFlow": "column"
+			}
+		}
+	]
+}

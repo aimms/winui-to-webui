@@ -1,0 +1,75 @@
+## ams_version=1.0
+
+LibraryModule WinScreenshots {
+	Prefix: wss;
+	Interface: Public_Section;
+	Section Public_Section {
+		Procedure pr_makeScreenshots {
+			Body: {
+				pr_doMakeScreenshots();
+			}
+		}
+	}
+	Section Private_Section {
+		Set s_allPages {
+			Index: i_page;
+		}
+		Procedure pr_doMakeScreenshots {
+			Body: {
+				if FileExists( "data/initial.data" ) then
+					CaseFileLoad( "data/initial.data" );
+				endif ;
+				PageGetAll(
+					page_set          :  s_allPages,
+					IncludePages      :  1,
+					IncludeTemplates  :  0,
+					ExcludeHidden     :  1,
+					ExcludePrintables :  1);
+				_sp_folder := "winui_screenshots";
+				if not DirectoryExists(_sp_folder) then
+					DirectoryCreate(_sp_folder);
+				endif ;
+				for i_page do
+					_sp_pageName := formatString("%e", i_page);
+					block
+						PageOpen(  _sp_pageName );
+						delay(1);
+						_sp_fn := formatString("\"%s/%e.png\"", _sp_folder, i_page);
+						_sp_arg := formatString("make_screenshot(%s)",_sp_fn);
+						py::run_python_statement(_sp_arg);
+						PageClose( _sp_pageName );
+					onerror ep_err do
+						errh::MarkAsHandled(ep_err);
+					endblock ;
+				endfor ;
+			}
+			StringParameter _sp_pageName;
+			StringParameter _sp_arg;
+			StringParameter _sp_folder;
+			StringParameter _sp_fn;
+			ElementParameter ep_err {
+				Range: errh::PendingErrors;
+			}
+		}
+		Section lib_start_stop {
+			Procedure LibraryInitialization {
+				Comment: "Add initialization statements here that do not require any other library being initialized already.";
+			}
+			Procedure PostLibraryInitialization {
+				Body: {
+					py::run_python_script("screenshot.py");
+				}
+			}
+			Procedure PreLibraryTermination {
+				Body: {
+					return 1;
+				}
+			}
+			Procedure LibraryTermination {
+				Body: {
+					return 1;
+				}
+			}
+		}
+	}
+}

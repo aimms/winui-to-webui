@@ -25,6 +25,14 @@ building.md                  How to build w2w.exe from source
 usage.md                     How to use w2w.exe
 ```
 
+## Examples
+
+The example projects live in a separate git repository, which this repository does not track (`/examples/` is git-ignored). Clone it into the repository root:
+
+```
+git clone git@gitlab.aimms.com:aimms/user-support/customer-support/ChrisKuip/nirvana/0287-w2w-examples.git examples
+```
+
 ## Support & Feedback
 
 This tool is maintained by the **AIMMS User Support Team**.

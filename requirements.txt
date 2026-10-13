@@ -1,0 +1,9 @@
+pandas
+aimmspy
+python-slugify
+pip
+PySide6
+pyinstaller
+lxml
+mypy
+pytest

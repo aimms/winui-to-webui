@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "0287-w2wpy"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+  "aimmspy",
+  "python-slugify",
+  "PySide6",
+  "lxml",
+  "pandas",]
+
+[tool.setuptools]
+# Alle losse modules die je wilt installeren
+py-modules = [
+  "main", "cli", "gui",
+  "aimms_slug",
+  "ams_file_editor",
+  "converter_logging",
+  "gii_module",
+  "identifier_element_text",
+  "manipulate_main_model",
+  "modeledit_aimmspy",
+  "modeledit_aimmspy2",
+  "tools",
+  "w2w_types",
+  "web_page",
+  "web_page_types",
+  "win_barchart",
+  "win_button",
+  "win_classic_table",
+  "win_color",
+  "win_color_scan",
+  "win_composite_table",
+  "win_document_viewer",
+  "win_elemselec",
+  "win_expression",
+  "win_layout",
+  "win_linechart",
+  "win_object",
+  "win_object_tools",
+  "win_page",
+  "win_pagemanager",
+  "win_picture",
+  "win_pivot_state",
+  "win_pivot_table",
+  "win_procedure",
+  "win_scalar",
+  "win_tabbed_page",
+  "win_text",
+  "winui_to_webui",
+  # main_dev.py (hardcoded dev entry point) and test_winui_to_webui.py (pytest suite)
+  # are intentionally excluded - not part of the distributed/built tool.
+]
+
+[tool.uv.workspace]
+members = [
+    "scripts",
+    "examples/w2w0018",
+]
+
+[project.scripts]
+# Naam van de executable = "module.submodule:functie"
+w2w_main = "main:main_entry_point"
+w2w_cli = "cli:cli_entry_point"
+w2w_gui = "gui:gui_entry_point"
