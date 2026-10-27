@@ -31,7 +31,7 @@ blank lines and lines starting with '#' ignored) is run as a sequence of separat
 simulating a user manually converting one page at a time - instead of a single plain
 `w2w.exe` full-conversion call.
 
-An example folder containing a `test.bat` is converted by running that batch file instead (from
+An example folder containing a `callw2w.bat` is converted by running that batch file instead (from
 the example folder) - so per-example
 options such as `--colors` live in the example itself. This takes precedence over
 `pagemarkers.txt`, and its `..\..\..\dist\w2w.exe` path means -W2wExe is ignored for it.
@@ -111,17 +111,17 @@ $runExampleDef = {
             $inputDir    = Join-Path $srcDir "input"
             $workDir     = Join-Path $srcDir "work"
             $markersFile = Join-Path $srcDir "pagemarkers.txt"
-            $testBat     = Join-Path $srcDir "test.bat"
+            $callW2wBat  = Join-Path $srcDir "callw2w.bat"
             if (Test-Path $workDir) { Remove-Item -Recurse -Force $workDir }
             Copy-Item -Recurse $inputDir $workDir
 
-            if (Test-Path $testBat) {
-                # The example's own test.bat decides how w2w.exe is called (e.g. --colors). It runs
+            if (Test-Path $callW2wBat) {
+                # The example's own callw2w.bat decides how w2w.exe is called (e.g. --colors). It runs
                 # from the example folder, as when double-clicked. cmd's exit code is the batch
                 # file's last command (its closing `cd ..`), not w2w.exe's, so detect a crash from
                 # the log instead. cd inside cmd itself: a native process doesn't inherit
                 # Push-Location's location in a ForEach-Object -Parallel runspace.
-                cmd /c "cd /d `"$srcDir`" && .\test.bat" 2>&1 | Tee-Object -FilePath $logFile | Out-Null
+                cmd /c "cd /d `"$srcDir`" && .\callw2w.bat" 2>&1 | Tee-Object -FilePath $logFile | Out-Null
                 $exit = 0
                 if (Select-String -Path $logFile -Pattern 'Traceback \(most recent call last\)' -Quiet) { $exit = 1 }
             } else {
