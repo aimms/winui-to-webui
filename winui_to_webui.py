@@ -113,7 +113,7 @@ def process_aimms_app(project_folder:str, project_name:str, page_name: str = Non
     webui_dict = {
         "UUID"    : "69378F70-E906-486F-8F2C-1D606AEB9669",
         "Name"    : "WebUI",
-        "Version" : "26.12.5.5"
+        "Version" : "26.13.1.1"
     }
     manipulate_main_model.ensureRepositoryLibrary(project_file, "WebUI", webui_dict)
     manipulate_main_model.ensureExistingLibrary(project_file, "ModelEditAimmsPython" )
