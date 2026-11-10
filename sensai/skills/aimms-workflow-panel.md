@@ -1,6 +1,7 @@
 ---
 name: aimms-workflow-panel
 description: Create a WebUI workflow panel (left-side step navigation) in an AIMMS app, built from a chosen parent page and the pages below it. Use when the user asks for a workflow panel or workflow steps, or mentions webui.json, WorkflowSteps, WorkflowDefinitions or workflows.configuration.
+allowed-tools: Bash(python -I *workflow_panel.py *), Bash(git status *), Bash(git check-ignore *), Read, Grep, Glob, Edit
 ---
 
 # AIMMS workflow panel
@@ -17,9 +18,12 @@ This skill is a single file. The helper script it needs is included below in
 [Helper script](#helper-script-workflow_panelpy). Before the first step, write
 that code block verbatim to a temporary file (your scratchpad, or a temp
 folder; not inside the user's project) named `workflow_panel.py`, and run it
-with `python -I <that path> <subcommand> <webui.json> ...`. It uses the
-standard library only. Hand-editing `webui.json` is error-prone, so use the
-script for it. The `.ams` edit is yours.
+with `python -I <that path> <subcommand> <webui.json> ...`. Do not embed the
+whole helper in a long inline `python -c` command or generate such a command:
+copy the code block itself into the temporary file, or extract that fenced code
+block from this skill file with the file tools and then run the file. It uses
+the standard library only. Hand-editing `webui.json` is error-prone, so use
+the script for it. The `.ams` edit is yours.
 
 ## Inputs to settle first
 
