@@ -75,7 +75,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='w2w',
+    name='WinUI_to_WebUI',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

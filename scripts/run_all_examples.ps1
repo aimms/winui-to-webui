@@ -27,14 +27,14 @@ Logs are written to `logs/<example>-YYYYMMDD-HHMMSS.txt`.
 
 An example folder containing a `pagemarkers.txt` file (one WinUI page Name per line,
 blank lines and lines starting with '#' ignored) is run as a sequence of separate
-`w2w.exe --page <name>` invocations against the same work/ folder, in file order -
+`WinUI_to_WebUI.exe --page <name>` invocations against the same work/ folder, in file order -
 simulating a user manually converting one page at a time - instead of a single plain
-`w2w.exe` full-conversion call.
+`WinUI_to_WebUI.exe` full-conversion call.
 
 An example folder containing a `callw2w.bat` is converted by running that batch file instead (from
 the example folder) - so per-example
 options such as `--colors` live in the example itself. This takes precedence over
-`pagemarkers.txt`, and its `..\..\..\dist\w2w.exe` path means -W2wExe is ignored for it.
+`pagemarkers.txt`, and its `..\..\..\dist\WinUI_to_WebUI.exe` path means -W2wExe is ignored for it.
 #>
 
 Set-StrictMode -Version Latest
@@ -55,8 +55,8 @@ if (-not (Test-Path $examplesDir)) {
 
 New-Item -ItemType Directory -Path $logsDir -Force | Out-Null
 
-# Locate w2w.exe
-if ($W2wExe -eq "") { $W2wExe = Join-Path $repoRoot "dist\w2w.exe" }
+# Locate WinUI_to_WebUI.exe
+if ($W2wExe -eq "") { $W2wExe = Join-Path $repoRoot "dist\WinUI_to_WebUI.exe" }
 if (-not (Test-Path $W2wExe)) {
     Write-Error "Executable not found: $W2wExe. Run 'pyinstaller w2w.spec' first."
     exit 2
@@ -116,9 +116,9 @@ $runExampleDef = {
             Copy-Item -Recurse $inputDir $workDir
 
             if (Test-Path $callW2wBat) {
-                # The example's own callw2w.bat decides how w2w.exe is called (e.g. --colors). It runs
+                # The example's own callw2w.bat decides how WinUI_to_WebUI.exe is called (e.g. --colors). It runs
                 # from the example folder, as when double-clicked. cmd's exit code is the batch
-                # file's last command (its closing `cd ..`), not w2w.exe's, so detect a crash from
+                # file's last command (its closing `cd ..`), not WinUI_to_WebUI.exe's, so detect a crash from
                 # the log instead. cd inside cmd itself: a native process doesn't inherit
                 # Push-Location's location in a ForEach-Object -Parallel runspace.
                 cmd /c "cd /d `"$srcDir`" && .\callw2w.bat" 2>&1 | Tee-Object -FilePath $logFile | Out-Null
@@ -129,7 +129,7 @@ $runExampleDef = {
             Push-Location $workDir
             try {
                 if (Test-Path $markersFile) {
-                    # Single-page mode: one `w2w --page <name>` call per marker line, in order,
+                    # Single-page mode: one `WinUI_to_WebUI --page <name>` call per marker line, in order,
                     # against the same work directory - simulating separate manual invocations.
                     $pageNames = @(Get-Content $markersFile | ForEach-Object { $_.Trim() } | Where-Object { $_ -and -not $_.StartsWith('#') })
                     $exit = 0

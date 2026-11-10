@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-- `w2w.exe` — obtain a copy from your team or build it from source (see [building.md](building.md))
+- `WinUI_to_WebUI.exe` — obtain a copy from your team or build it from source (see [building.md](building.md))
 - AIMMS model in AIMMS 25.9
 
 ## Before you start: back up your project
@@ -24,7 +24,7 @@ If you are not using source control, make a manual backup of the entire project 
    ```
 3. Run the tool:
    ```
-   w2w
+   WinUI_to_WebUI
    ```
 
 The tool will:
@@ -47,6 +47,6 @@ Review the changes in your source control diff, or compare manually against your
 
 | Message | Cause |
 |---|---|
-| `No .aimms file found in the current directory` | Run `w2w` from the folder that contains the `.aimms` file |
+| `No .aimms file found in the current directory` | Run `WinUI_to_WebUI` from the folder that contains the `.aimms` file |
 | `Multiple .aimms files found` | The folder contains more than one `.aimms` file; remove or move the extras |
 | `Project folder '...' does not exist` | Internal error — the detected path no longer exists |

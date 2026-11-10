@@ -10,7 +10,7 @@ then calls `winui_to_webui.process_aimms_app(work_path, example_name)`.
 If the example has a `pagemarkers.txt` file (one WinUI page Name per line, blank
 lines and lines starting with '#' ignored), that full conversion is skipped in favor
 of calling `process_aimms_app(work_path, example_name, page_name=<line>)` once per
-line, in order - simulating a sequence of separate `w2w --page <name>` invocations
+line, in order - simulating a sequence of separate `WinUI_to_WebUI --page <name>` invocations
 against the same project, to exercise single-page mode.
 
 Exit code 0 indicates success.

@@ -5,11 +5,11 @@ It reads the AIMMS project in the current directory and writes the WebUI output 
 
 ## Quick start
 
-1. Download or build `w2w.exe` (see [building.md](building.md)).
-2. Place `w2w.exe` somewhere on your PATH, or note its location.
+1. Download or build `WinUI_to_WebUI.exe` (see [building.md](building.md)).
+2. Place `WinUI_to_WebUI.exe` somewhere on your PATH, or note its location.
 3. Open a terminal, navigate to your AIMMS project folder (the one containing the `.aimms` file), and run:
    ```
-   w2w
+   WinUI_to_WebUI
    ```
 
 See [usage.md](usage.md) for full instructions, including the backup requirement.
@@ -18,11 +18,11 @@ See [usage.md](usage.md) for full instructions, including the backup requirement
 
 ```
 py/                          Python source code
-GeneratedInterfaceIdentifiersLibrary/   \  bundled into w2w.exe at build time;
+GeneratedInterfaceIdentifiersLibrary/   \  bundled into WinUI_to_WebUI.exe at build time;
 ModelEditAimmsPython/                   /  copied into each project during conversion
 w2w.spec                     PyInstaller build spec
-building.md                  How to build w2w.exe from source
-usage.md                     How to use w2w.exe
+building.md                  How to build WinUI_to_WebUI.exe from source
+usage.md                     How to use WinUI_to_WebUI.exe
 ```
 
 ## Examples

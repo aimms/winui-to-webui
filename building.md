@@ -1,6 +1,6 @@
 # Building w2w from Source
 
-These instructions produce `dist\w2w.exe` — a self-contained Windows executable that requires no Python installation to run.
+These instructions produce `dist\WinUI_to_WebUI.exe` — a self-contained Windows executable that requires no Python installation to run.
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ These instructions produce `dist\w2w.exe` — a self-contained Windows executabl
 
 4. The executable is written to:
    ```
-   dist\w2w.exe
+   dist\WinUI_to_WebUI.exe
    ```
 
 ## What the build bundles
