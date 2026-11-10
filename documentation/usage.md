@@ -5,7 +5,7 @@
 ## Prerequisites
 
 - `WinUI_to_WebUI.exe` — obtain a copy from your team or build it from source (see [building.md](building.md))
-- AIMMS 26.6 installed — `w2w` opens the project with the latest installed 26.6.x
+- AIMMS 26.8.1.2 installed — `WinUI_to_WebUI` opens the project with AIMMS 26.8.1.2
 - A project without WebUI gets the WebUI repository library 26.12.5.5 added; a project that already references WebUI keeps its own version
 
 ## Before you start: back up your project

@@ -5,7 +5,7 @@
 ## Prerequisites
 
 - `WinUI_to_WebUI.exe` — obtain a copy from your team or build it from source (see [building.md](building.md))
-- AIMMS model in AIMMS 25.9
+- AIMMS model in AIMMS 26.8.1.2
 
 ## Before you start: back up your project
 
