@@ -11,7 +11,7 @@ children become child steps. It also moves the buttons that were used to
 navigate those pages to the **Unassigned widgets** area of their page, so the
 panel replaces them. Nothing is deleted, and no other widget is touched.
 
-Tested with AIMMS 26.7, WebUI library 26.13 (webui.json version 4.67.0).
+Tested with AIMMS 26.8, WebUI library 26.13 (webui.json version 4.67.0).
 
 This skill is a single file. The helper script it needs is included below in
 [Helper script](#helper-script-workflow_panelpy). Before the first step, write
@@ -28,14 +28,12 @@ script for it. The `.ams` edit is yours.
 2. **Parent page.** Run `list` to show the tree with slugs and ask the user
    which page is the top. Its children become the top-level steps.
 3. **Workflow title** (default: parent page name).
-4. **Icons.** Each step needs an `aimms-...` icon.
-   `webui::AIMMSIcons` is the set of available names.
-   Propose one per page from the [Available icons](#available-icons) list
-   below (the names in `webui::AIMMSIcons`) and write a JSON map `{"slug": "aimms-xyz"}` to a temporary file for
-   `--icons`. Names seen working:
-   `aimms-lan`, `aimms-factory`, `aimms-atom`, `aimms-lab`. Don't invent names; if
-   unsure, use the default and tell the user. See
-   [Example icon map](#example-icon-map-data-reconciliation) for a complete map.
+4. **Icons.** Each step needs an `aimms-...` icon from `webui::AIMMSIcons`.
+   Pick one per page that fits the page's name from the
+   [Available icons](#available-icons) list below, and write a JSON map
+   `{"slug": "aimms-xyz"}` to a temporary file for `--icons`. Don't invent
+   names. A page without an entry gets the default icon (`aimms-lan`); tell the
+   user which pages got it.
 5. **Existing workflow.** Grep the `.ams` for `WorkflowSteps` and
    `WorkflowDefinitions`. If present, ask whether to replace them.
 
@@ -50,9 +48,11 @@ script for it. The `.ams` edit is yours.
 2. **Preview the steps.** Run
    `generate <webui.json> --parent <slug> --title "<T>" [--icons map.json] --out snippet.ams`
    (write `snippet.ams` to the same temporary folder).
-   Read the stderr summary. Show the user the step list and any **EXCLUDED**
-   pages (deeper than one child level; a workflow supports only one level).
-   Ask whether to leave them out (default) or to restructure. More than 10
+   Read the stderr summary and show the user the step list. Pages that sit too
+   deep in the tree (deeper than one child level; a workflow supports only one
+   level) are **SKIPPED** automatically: don't ask the user about them and don't
+   restructure the tree. Only mention them in one short line each, in the form
+   `skipped <name> [<slug>]: too deep in the page tree`. More than 10
    top-level steps or 10 child steps per parent gets a warning; mention it.
 3. **Write the model code.** Put the contents of `snippet.ams` in a
    `DeclarationSection` (for example `Workflow_Support`) in the model `.ams`.
@@ -66,21 +66,20 @@ script for it. The `.ams` edit is yours.
    can't use. Never use the short form
    `{"aimms": {"contents": ["WorkflowSteps"]}}`; it validates but gives empty pages.
 5. **Move the navigation buttons.** Only for pages that are workflow steps
-   (excluded and parent pages are left alone). Run
+   (skipped and parent pages are left alone). Run
    `unassign <webui.json> --ams <model.ams> --parent <slug> --dry-run` and read
    the list. The script classifies each button by the procedure behind its
    action (converter-generated `giim::pr_action_sequence_*` procedures, read
    from the `.ams`):
-   - **MOVE**: the body only calls `webui::OpenPage(...)` (Main Navigation,
-     Process Topology...), or is empty and the button is untitled, or titled
-     Quit/Close (the arrow and Quit buttons).
-   - **ASK**: the body is empty but the button has a real title (Print, Select
-     Cases, Unit coordinates). These are unconverted actions and may be
-     navigation. Show them to the user; they stay in place unless the user says
-     to move them (`--include-ambiguous`).
-   - Everything else is left alone: buttons that call a model procedure
-     (`SolveTheModel`) or an action sequence that does more than open a page
-     (Clear Dataset runs `NewCase()` first).
+   - **MOVE**: the body only calls `webui::OpenPage(...)` (page navigation
+     buttons), or is empty and the button is untitled, or titled Quit/Close
+     (arrow and Quit buttons).
+   - **ASK**: the body is empty but the button has a real title. These are
+     unconverted actions and may be navigation. Show them to the user; they
+     stay in place unless the user says to move them (`--include-ambiguous`).
+   - Everything else is left alone: buttons that call a model procedure, or an
+     action sequence that does more than open a page (for example one that
+     first changes data).
 
    Show the user the MOVE list and the ASK list, then run it without
    `--dry-run`. Moving sets the binding's `gridArea` to `Unassigned widgets`;
@@ -93,7 +92,7 @@ script for it. The `.ams` edit is yours.
 
 ## What to report
 
-State what changed (files, number of steps, excluded pages, buttons moved and the ASK list), what the static
+State what changed (files, number of steps, skipped pages, buttons moved and the ASK list), what the static
 `check` found, and what only the user can verify.
 
 ## Workflow formats
@@ -110,30 +109,28 @@ slug is the page ID. Page content sits flat in `pages/<slug>` (with
 ```
 StringParameter WorkflowDefinitions {
     IndexDomain: (webui::indexWorkflowOrder, webui::indexWorkflowSpec);
-    Definition: data { ( '1', 'title' ) : "Data Reconciliation" };
+    Definition: { ( '1', 'title' ) : "My application" };
 }
 StringParameter WorkflowSteps {
     IndexDomain: (webui::indexWorkflowOrder, webui::indexNoOfPages,
                   webui::indexWorkflowPageSpec);
     Definition: {
-        data {
-            ( '1', '1', 'displayText'       ) : "Process Topology",
-            ( '1', '1', 'icon'              ) : "aimms-lan",
-            ( '1', '1', 'pageId'            ) : "process_topology",
-            ( '1', '1', 'workflowPageState' ) : "Active",
-            ( '1', '1', 'parentPageId'      ) : "",
-            ( '1', '1', 'pageDataState'     ) : "",
-            ( '1', '1', 'redirectPageId'    ) : "",
+        ( '1', '1', 'displayText'       ) : "First page",
+        ( '1', '1', 'icon'              ) : "aimms-lan",
+        ( '1', '1', 'pageId'            ) : "first_page",
+        ( '1', '1', 'workflowPageState' ) : "Active",
+        ( '1', '1', 'parentPageId'      ) : "",
+        ( '1', '1', 'pageDataState'     ) : "",
+        ( '1', '1', 'redirectPageId'    ) : "",
 
-            ( '1', '2', 'displayText'       ) : "Units",
-            ...
-        }
+        ( '1', '2', 'displayText'       ) : "Second page",
+        ...
     }
 }
 ```
 
-One line per field, a blank line between steps. The outer braces of
-`Definition: { ... }` only enclose the attribute; the `data { ... }` is the value.
+One line per field, a blank line between steps. The braces in
+`Definition: { ... }` are the definition value itself.
 No comma after the last entry. `generate` produces exactly this.
 
 | Field | Value |
@@ -194,10 +191,10 @@ diff will be huge.
 
 ### Limits
 
-- One level of child steps. Deeper pages don't appear in the panel.
+- One level of child steps. Deeper pages don't appear in the panel; the skill
+  skips them and reports them in a short message, without asking the user.
 - Recommended maximum: 10 top-level steps and 10 child steps per parent
-  (AIMMS documentation). The Data Reconciliation example has three top-level steps
-  and up to six or seven child steps each.
+  (AIMMS documentation).
 
 ### No steps appear
 
@@ -212,10 +209,9 @@ Check in this order:
 1. The model compiles. A compile error leaves the WebUI empty.
 2. The user is on a workflow page, not `home`. The WebUI opens on `home`, which
    the conversion leaves empty and which isn't a workflow step; no panel there is expected.
-3. The definitions start with `data`.
-4. `workflows.configuration` / `workflows.information` are in the exact format
+3. `workflows.configuration` / `workflows.information` are in the exact format
    (`check` verifies; `settings` fixes).
-5. Top-level `aimms.widget.type` and `layoutId` in `webui.json` are `{}`. The
+4. Top-level `aimms.widget.type` and `layoutId` in `webui.json` are `{}`. The
    conversion can leave page keys at the top level (`aimms.widget.type`,
    `layoutId`, `bindings`, `widgets`) outside any `pages/...` object. When the
    WebUI saves the file it empties `aimms.widget.type` and `layoutId` to `{}`;
@@ -226,34 +222,6 @@ Check in this order:
 - Missing icon: check the name against [Available icons](#available-icons); it must match exactly and have the `aimms-` prefix.
 - The WebUI rewrites `webui.json` on save. Re-run `check` after the user saves
   in the WebUI if anything looks off.
-
-## Example icon map (Data Reconciliation)
-
-The map used for the Data Reconciliation app. Reuse it as a starting point for
-that app; for other apps, propose names per page.
-
-```json
-{
-  "process_topology": "aimms-lan",
-  "units": "aimms-factory",
-  "components": "aimms-atom",
-  "process_reactants": "aimms-lab",
-  "reactant_composition": "aimms-pie-chart",
-  "flows_and_components": "aimms-link",
-  "flow_network": "aimms-map",
-  "process_measurements": "aimms-meter",
-  "measured_flows": "aimms-wave",
-  "measured_compositions": "aimms-pie-chart2",
-  "measurement_overview": "aimms-chart",
-  "reconciliation": "aimms-cog",
-  "measured_values": "aimms-database",
-  "run_reconciliation_model": "aimms-play",
-  "measured_vs_reconciled": "aimms-balance",
-  "flow_chart": "aimms-stats-bars",
-  "reconciled_values": "aimms-checkmark",
-  "compare_multiple_cases": "aimms-copy"
-}
-```
 
 ## Helper script (`workflow_panel.py`)
 
@@ -371,7 +339,7 @@ def build_steps(root, parent_slug, max_depth=1):
     """Return (steps, excluded). Step = dict(name, slug, parent). Children of the
     parent page become top-level steps; their children become child steps."""
     parent = find(root, parent_slug)
-    steps, excluded = [], []
+    steps, excluded = [], []  # excluded: pages too deep in the tree, skipped without asking
     for top in parent.get("children", []):
         steps.append({"name": top["name"], "slug": top["slug"], "parent": ""})
         for child in top.get("children", []):
@@ -421,9 +389,9 @@ def cmd_generate(a):
     tops = sum(1 for s in steps if not s["parent"])
     print(f"# {len(steps)} steps: {tops} top-level, {len(steps) - tops} child", file=sys.stderr)
     if excluded:
-        print("# EXCLUDED (deeper than one child level; a workflow supports one level):", file=sys.stderr)
         for n, s, under in excluded:
-            print(f"#   {n} [{s}] under [{under}]", file=sys.stderr)
+            print(f"# SKIPPED {n} [{s}]: too deep in the page tree (under [{under}]; a workflow supports one child level)",
+                  file=sys.stderr)
     if tops > MAX_TOP:
         print(f"# WARNING: {tops} top-level steps, documentation recommends at most {MAX_TOP}", file=sys.stderr)
     from collections import Counter
@@ -702,7 +670,7 @@ def main():
     s.add_argument("--ams", required=True, help="model .ams (to read the button action procedures)")
     s.add_argument("--parent", required=True, help="slug of the page at the top of the tree")
     s.add_argument("--include-ambiguous", action="store_true",
-                   help="also move empty-action buttons that have a real title (Print, Select Cases...)")
+                   help="also move empty-action buttons that have a real title (these may be navigation)")
     s.add_argument("--dry-run", action="store_true"); s.set_defaults(f=cmd_unassign)
 
     s = sub.add_parser("check"); s.add_argument("webui")
