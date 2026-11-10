@@ -30,9 +30,8 @@ script for it. The `.ams` edit is yours.
 3. **Workflow title** (default: parent page name).
 4. **Icons.** Each step needs an `aimms-...` icon.
    `webui::AIMMSIcons` is the set of available names.
-   Propose one per page from the
-   [icon list](https://documentation.aimms.com/_static/aimms-icons/icons-reference.html)
-   and write a JSON map `{"slug": "aimms-xyz"}` to a temporary file for
+   Propose one per page from the [Available icons](#available-icons) list
+   below (the names in `webui::AIMMSIcons`) and write a JSON map `{"slug": "aimms-xyz"}` to a temporary file for
    `--icons`. Names seen working:
    `aimms-lan`, `aimms-factory`, `aimms-atom`, `aimms-lab`. Don't invent names; if
    unsure, use the default and tell the user. See
@@ -224,7 +223,7 @@ Check in this order:
 
 ### Other
 
-- Missing icon: check the name against the AIMMS icon list; it needs the `aimms-` prefix.
+- Missing icon: check the name against [Available icons](#available-icons); it must match exactly and have the `aimms-` prefix.
 - The WebUI rewrites `webui.json` on save. Re-run `check` after the user saves
   in the WebUI if anything looks off.
 
@@ -715,6 +714,288 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
+
+## Available icons
+
+These are all 1609 names in `webui::AIMMSIcons`, read from the model
+(`webui::AIMMSIcons := data { ... }`). An icon must be one of them, exactly as
+written and with the `aimms-` prefix. Search this list (grep) for a name that
+fits the page instead of guessing. Names are case-sensitive, e.g. `aimms-IcoMoon`.
+
+```text
+aimms-home aimms-home2 aimms-home3 aimms-home4 aimms-home5 aimms-home6 aimms-home7 aimms-home8
+aimms-home9 aimms-office aimms-city aimms-newspaper aimms-magazine aimms-design aimms-pencil
+aimms-pencil2 aimms-pencil3 aimms-pencil4 aimms-pencil5 aimms-pencil6 aimms-pencil7 aimms-eraser
+aimms-eraser2 aimms-eraser3 aimms-quill aimms-quill2 aimms-quill3 aimms-quill4 aimms-pen
+aimms-pen-plus aimms-pen-minus aimms-pen2 aimms-pen3 aimms-pen4 aimms-pen5 aimms-marker
+aimms-marker2 aimms-blog aimms-blog2 aimms-pen6 aimms-brush aimms-spray aimms-palette aimms-palette2
+aimms-color-sampler aimms-toggle aimms-bucket aimms-bucket2 aimms-gradient aimms-eyedropper
+aimms-eyedropper2 aimms-eyedropper3 aimms-droplet aimms-droplet2 aimms-droplet-contrast
+aimms-color-clear aimms-paint-format aimms-stamp aimms-images aimms-image aimms-image2
+aimms-image-compare aimms-images2 aimms-image3 aimms-images3 aimms-image4 aimms-image5 aimms-image6
+aimms-camera aimms-camera2 aimms-camera3 aimms-shutter aimms-headphones aimms-headset aimms-music
+aimms-music2 aimms-music3 aimms-music4 aimms-music5 aimms-music6 aimms-album aimms-cassette
+aimms-tape aimms-piano aimms-guitar aimms-trumpet aimms-speakers aimms-play aimms-play2
+aimms-clapboard-play aimms-clapboard aimms-media aimms-presentation aimms-movie aimms-film
+aimms-film2 aimms-film3 aimms-film4 aimms-video-camera aimms-video-camera2 aimms-video-camera-slash
+aimms-video-camera3 aimms-video-camera4 aimms-video-camera-slash2 aimms-video-camera5
+aimms-recording aimms-dice aimms-gamepad aimms-gamepad2 aimms-gamepad3 aimms-pacman aimms-spades
+aimms-clubs aimms-diamonds aimms-chess-king aimms-chess-queen aimms-chess-rook aimms-chess-bishop
+aimms-chess-knight aimms-chess-pawn aimms-chess aimms-bullhorn aimms-megaphone aimms-new
+aimms-connection aimms-connection2 aimms-connection3 aimms-connection4 aimms-podcast aimms-station
+aimms-station2 aimms-antenna aimms-satellite-dish aimms-satellite-dish2 aimms-feed aimms-podcast2
+aimms-antenna2 aimms-mic aimms-mic-off aimms-mic2 aimms-mic-off2 aimms-mic3 aimms-mic4 aimms-mic5
+aimms-book aimms-book2 aimms-book-play aimms-book3 aimms-bookmark aimms-books aimms-archive
+aimms-reading aimms-library aimms-library2 aimms-graduation aimms-file-text aimms-profile
+aimms-file-empty aimms-file-empty2 aimms-files-empty aimms-files-empty2 aimms-file-plus
+aimms-file-plus2 aimms-file-minus aimms-file-minus2 aimms-file-download aimms-file-download2
+aimms-file-upload aimms-file-upload2 aimms-file-check aimms-file-check2 aimms-file-eye
+aimms-file-eye2 aimms-file-text2 aimms-file-text3 aimms-file-picture aimms-file-picture2
+aimms-file-music aimms-file-music2 aimms-file-play aimms-file-play2 aimms-file-video
+aimms-file-video2 aimms-copy aimms-copy2 aimms-file-zip aimms-file-zip2 aimms-file-xml
+aimms-file-xml2 aimms-file-css aimms-file-css2 aimms-file-presentation aimms-file-presentation2
+aimms-file-stats aimms-file-stats2 aimms-file-locked aimms-file-locked2 aimms-file-spreadsheet
+aimms-file-spreadsheet2 aimms-copy3 aimms-copy4 aimms-paste aimms-paste2 aimms-paste3 aimms-paste4
+aimms-stack aimms-stack2 aimms-stack3 aimms-folder aimms-folder-search aimms-folder-download
+aimms-folder-upload aimms-folder-plus aimms-folder-plus2 aimms-folder-minus aimms-folder-minus2
+aimms-folder-check aimms-folder-heart aimms-folder-remove aimms-folder2 aimms-folder-open
+aimms-folder3 aimms-folder4 aimms-folder-plus3 aimms-folder-minus3 aimms-folder-plus4
+aimms-folder-minus4 aimms-folder-download2 aimms-folder-upload2 aimms-folder-download3
+aimms-folder-upload3 aimms-folder5 aimms-folder-open2 aimms-folder6 aimms-folder-open3
+aimms-certificate aimms-cc aimms-price-tag aimms-price-tag2 aimms-price-tags aimms-price-tag3
+aimms-price-tags2 aimms-price-tag4 aimms-price-tags3 aimms-price-tag5 aimms-price-tags4
+aimms-barcode aimms-barcode2 aimms-qrcode aimms-ticket aimms-ticket2 aimms-theater aimms-store
+aimms-store2 aimms-cart aimms-cart2 aimms-cart3 aimms-cart4 aimms-cart5 aimms-cart-add
+aimms-cart-add2 aimms-cart-remove aimms-basket aimms-bag aimms-bag2 aimms-percent aimms-coins
+aimms-coin-dollar aimms-coin-euro aimms-coin-pound aimms-coin-yen aimms-piggy-bank aimms-wallet
+aimms-cash aimms-cash2 aimms-cash3 aimms-cash4 aimms-credit-card aimms-credit-card2 aimms-calculator
+aimms-calculator2 aimms-calculator3 aimms-chip aimms-lifebuoy aimms-phone aimms-phone2
+aimms-phone-slash aimms-phone-wave aimms-phone-plus aimms-phone-minus aimms-phone-plus2
+aimms-phone-minus2 aimms-phone-incoming aimms-phone-outgoing aimms-phone3 aimms-phone-slash2
+aimms-phone-wave2 aimms-phone-hang-up aimms-phone-hang-up2 aimms-address-book aimms-address-book2
+aimms-address-book3 aimms-notebook aimms-at-sign aimms-envelop aimms-envelop2 aimms-envelop3
+aimms-envelop4 aimms-envelop5 aimms-mailbox aimms-pushpin aimms-pushpin2 aimms-location
+aimms-location2 aimms-location3 aimms-location4 aimms-location5 aimms-location6 aimms-location7
+aimms-compass aimms-compass2 aimms-compass3 aimms-compass4 aimms-compass5 aimms-compass6 aimms-map
+aimms-map2 aimms-map3 aimms-map4 aimms-map5 aimms-direction aimms-reset aimms-history aimms-clock
+aimms-clock2 aimms-clock3 aimms-clock4 aimms-watch aimms-watch2 aimms-alarm aimms-alarm-add
+aimms-alarm-check aimms-alarm-cancel aimms-bell aimms-bell2 aimms-bell3 aimms-bell-plus
+aimms-bell-minus aimms-bell-check aimms-bell-cross aimms-stopwatch aimms-calendar aimms-calendar2
+aimms-calendar3 aimms-calendar4 aimms-calendar5 aimms-calendar-empty aimms-calendar-day
+aimms-calendar-week aimms-printer aimms-printer2 aimms-printer3 aimms-printer4 aimms-shredder
+aimms-mouse aimms-mouse2 aimms-mouse-left aimms-mouse-right aimms-keyboard aimms-keyboard2
+aimms-typewriter aimms-display aimms-display2 aimms-display3 aimms-display4 aimms-laptop
+aimms-mobile aimms-mobile2 aimms-tablet aimms-mobile3 aimms-tv aimms-radio aimms-cabinet
+aimms-drawer aimms-drawer2 aimms-drawer-out aimms-drawer-in aimms-drawer3 aimms-box aimms-box-add
+aimms-box-remove aimms-download aimms-upload aimms-floppy-disk aimms-floppy-disks
+aimms-floppy-disks2 aimms-floppy-disk2 aimms-floppy-disk3 aimms-disk aimms-disk2 aimms-usb-stick
+aimms-drive aimms-server aimms-database aimms-database2 aimms-database3 aimms-database4
+aimms-database-menu aimms-database-add aimms-database-remove aimms-database-insert
+aimms-database-export aimms-database-upload aimms-database-refresh aimms-database-diff
+aimms-database-edit aimms-database-edit2 aimms-database-check aimms-database-arrow
+aimms-database-time aimms-database-time2 aimms-undo aimms-redo aimms-rotate-ccw aimms-rotate-cw
+aimms-rotate-ccw2 aimms-rotate-cw2 aimms-rotate-ccw3 aimms-rotate-cw3 aimms-flip-vertical
+aimms-flip-vertical2 aimms-flip-horizontal aimms-flip-horizontal2 aimms-flip-vertical3
+aimms-flip-vertical4 aimms-angle aimms-shear aimms-unite aimms-subtract aimms-interset aimms-exclude
+aimms-align-left aimms-align-center-horizontal aimms-align-right aimms-align-top
+aimms-align-center-vertical aimms-align-bottom aimms-undo2 aimms-redo2 aimms-forward aimms-reply
+aimms-reply-all aimms-bubble aimms-bubbles aimms-bubbles2 aimms-bubble2 aimms-bubbles3
+aimms-bubbles4 aimms-bubble-notification aimms-bubbles5 aimms-bubbles6 aimms-bubble3
+aimms-bubble-dots aimms-bubble-lines aimms-bubble4 aimms-bubble-dots2 aimms-bubble-lines2
+aimms-bubble5 aimms-bubble6 aimms-bubbles7 aimms-bubble7 aimms-bubbles8 aimms-bubble8
+aimms-bubble-dots3 aimms-bubble-lines3 aimms-bubble9 aimms-bubble-dots4 aimms-bubble-lines4
+aimms-bubbles9 aimms-bubbles10 aimms-bubble-blocked aimms-bubble-quote aimms-bubble-user
+aimms-bubble-smiley aimms-bubble-check aimms-bubble-video aimms-bubble-link aimms-bubble-lock
+aimms-bubble-star aimms-bubble-heart aimms-bubble-paperclip aimms-bubble-cancel aimms-bubble-plus
+aimms-bubble-minus aimms-bubble-notification2 aimms-bubble-left aimms-bubble-right
+aimms-bubble-first aimms-bubble-last aimms-bubble-reply aimms-bubble-forward aimms-bubble-reply2
+aimms-bubble-forward2 aimms-user aimms-users aimms-user-plus aimms-user-minus aimms-user-cancel
+aimms-user-block aimms-user-lock aimms-user-check aimms-users2 aimms-user2 aimms-users3
+aimms-user-plus2 aimms-user-minus2 aimms-user-cancel2 aimms-user-block2 aimms-user-lock2
+aimms-user-check2 aimms-user3 aimms-user4 aimms-user5 aimms-user6 aimms-users4 aimms-user-tie
+aimms-user7 aimms-users5 aimms-collaboration aimms-vcard aimms-hat aimms-bowtie aimms-tie
+aimms-hanger aimms-tshirt aimms-pants aimms-shorts aimms-sock aimms-laundry aimms-quotes-left
+aimms-quotes-right aimms-quotes-left2 aimms-quotes-right2 aimms-hour-glass aimms-hour-glass2
+aimms-hour-glass3 aimms-spinner aimms-spinner2 aimms-spinner3 aimms-spinner4 aimms-spinner5
+aimms-spinner6 aimms-spinner7 aimms-spinner8 aimms-spinner9 aimms-spinner10 aimms-spinner11
+aimms-microscope aimms-binoculars aimms-binoculars2 aimms-search aimms-zoom-in aimms-zoom-out
+aimms-search2 aimms-zoom-in2 aimms-zoom-out2 aimms-search3 aimms-search4 aimms-zoom-in3
+aimms-zoom-out3 aimms-search5 aimms-search6 aimms-enlarge aimms-shrink aimms-enlarge2 aimms-shrink2
+aimms-enlarge3 aimms-shrink3 aimms-enlarge4 aimms-shrink4 aimms-enlarge5 aimms-shrink5
+aimms-enlarge6 aimms-shrink6 aimms-enlarge7 aimms-shrink7 aimms-key aimms-key2 aimms-key3 aimms-key4
+aimms-key5 aimms-keyhole aimms-lock aimms-lock2 aimms-lock3 aimms-lock4 aimms-unlocked aimms-lock5
+aimms-unlocked2 aimms-safe aimms-wrench aimms-wrench2 aimms-wrench3 aimms-equalizer aimms-equalizer2
+aimms-equalizer3 aimms-equalizer4 aimms-cog aimms-cogs aimms-cog2 aimms-cog3 aimms-cog4 aimms-cog5
+aimms-cog6 aimms-cog7 aimms-factory aimms-hammer aimms-hammer-wrench aimms-knife aimms-screwdriver
+aimms-screwdriver2 aimms-magic-wand aimms-magic-wand2 aimms-pulse aimms-pulse2 aimms-aid-kit
+aimms-aid-kit2 aimms-stethoscope aimms-ambulance aimms-alarm2 aimms-pandage aimms-pandage2 aimms-bug
+aimms-bug2 aimms-syringe aimms-syringe2 aimms-pill aimms-construction aimms-traffic-cone
+aimms-traffic-lights aimms-pie-chart aimms-pie-chart2 aimms-pie-chart3 aimms-pie-chart4
+aimms-pie-chart5 aimms-pie-chart6 aimms-pie-chart7 aimms-stats-dots aimms-stats-bars
+aimms-pie-chart8 aimms-stats-bars2 aimms-stats-bars3 aimms-stats-bars4 aimms-stats-bars5
+aimms-stats-bars6 aimms-chart aimms-stats-growth aimms-stats-decline aimms-stats-growth2
+aimms-stats-decline2 aimms-stairs-up aimms-stairs-down aimms-stairs aimms-stairs2 aimms-ladder
+aimms-rating aimms-rating2 aimms-rating3 aimms-cake aimms-podium aimms-stars aimms-medal-star
+aimms-medal aimms-medal2 aimms-medal-first aimms-medal-second aimms-medal-third aimms-crown
+aimms-trophy aimms-trophy2 aimms-trophy3 aimms-diamond aimms-diamond2 aimms-trophy4 aimms-gift
+aimms-gift2 aimms-balloon aimms-pipe aimms-mustache aimms-mustache2 aimms-glass aimms-glass2
+aimms-glass3 aimms-glass4 aimms-bottle aimms-bottle2 aimms-bottle3 aimms-bottle4 aimms-mug
+aimms-fork-knife aimms-spoon-knife aimms-cook aimms-plate aimms-steak aimms-fish aimms-chicken
+aimms-hamburger aimms-pizza aimms-cheese aimms-bread aimms-icecream aimms-milk aimms-cup aimms-cup2
+aimms-coffee-bean aimms-coffee aimms-teapot aimms-leaf aimms-leaf2 aimms-apple aimms-grapes
+aimms-cherry aimms-tree aimms-tree2 aimms-tree3 aimms-tree4 aimms-cactus aimms-mountains aimms-paw
+aimms-footprint aimms-tent aimms-flower aimms-flower2 aimms-rocket aimms-meter aimms-meter2
+aimms-meter-slow aimms-meter-medium aimms-meter-fast aimms-meter3 aimms-hammer2 aimms-balance
+aimms-scale aimms-bomb aimms-fire aimms-fire2 aimms-lab aimms-atom aimms-atom2 aimms-magnet
+aimms-magnet2 aimms-dumbbell aimms-skull aimms-skull2 aimms-lamp aimms-lamp2 aimms-lamp3
+aimms-spotlight aimms-lamp4 aimms-lamp5 aimms-lamp6 aimms-lamp7 aimms-lamp8 aimms-broom
+aimms-toiletpaper aimms-bin aimms-bin2 aimms-bin3 aimms-bin4 aimms-bin5 aimms-briefcase
+aimms-briefcase2 aimms-briefcase3 aimms-airplane aimms-airplane2 aimms-airplane3 aimms-airplane4
+aimms-paperplane aimms-car aimms-steering-wheel aimms-car2 aimms-gas aimms-bus aimms-truck
+aimms-bike aimms-road aimms-train aimms-train2 aimms-ship aimms-boat aimms-chopper aimms-chopper2
+aimms-cube aimms-cube2 aimms-cube3 aimms-cube4 aimms-pyramid aimms-pyramid2 aimms-package
+aimms-puzzle aimms-puzzle2 aimms-puzzle3 aimms-puzzle4 aimms-glasses-3d aimms-glasses-3d2
+aimms-glasses aimms-glasses2 aimms-brain aimms-accessibility aimms-accessibility2 aimms-strategy
+aimms-target aimms-target2 aimms-target3 aimms-ammo aimms-gun aimms-gun-forbidden aimms-shield
+aimms-shield-check aimms-shield-notice aimms-shield2 aimms-shield3 aimms-shield4 aimms-soccer
+aimms-football aimms-archery aimms-bow aimms-sword aimms-tennis aimms-pingpong aimms-baseball
+aimms-basketball aimms-golf aimms-golf2 aimms-hockey aimms-racing aimms-finish aimms-eight-ball
+aimms-bowling aimms-bowling2 aimms-power aimms-power2 aimms-power3 aimms-switch aimms-switch2
+aimms-power-cord aimms-power-cord2 aimms-outlet aimms-clipboard aimms-clipboard2 aimms-clipboard3
+aimms-clipboard4 aimms-clipboard5 aimms-clipboard6 aimms-playlist aimms-playlist-add
+aimms-list-numbered aimms-list aimms-list2 aimms-more aimms-more2 aimms-grid aimms-grid2 aimms-grid3
+aimms-grid4 aimms-grid5 aimms-grid6 aimms-grid7 aimms-tree5 aimms-tree6 aimms-tree7 aimms-lan
+aimms-lan2 aimms-lan3 aimms-menu aimms-circle-small aimms-menu2 aimms-menu3 aimms-menu4 aimms-menu5
+aimms-menu6 aimms-menu7 aimms-menu8 aimms-menu9 aimms-menu10 aimms-cloud aimms-cloud-download
+aimms-cloud-upload aimms-cloud-check aimms-cloud2 aimms-cloud-download2 aimms-cloud-upload2
+aimms-cloud-check2 aimms-download2 aimms-download3 aimms-upload2 aimms-upload3 aimms-import
+aimms-import2 aimms-download4 aimms-upload4 aimms-download5 aimms-upload5 aimms-download6
+aimms-upload6 aimms-download7 aimms-upload7 aimms-download8 aimms-upload8 aimms-download9
+aimms-upload9 aimms-download10 aimms-upload10 aimms-sphere aimms-sphere2 aimms-sphere3 aimms-planet
+aimms-planet2 aimms-earth aimms-earth2 aimms-earth3 aimms-link aimms-unlink aimms-link2
+aimms-unlink2 aimms-link3 aimms-unlink3 aimms-link4 aimms-unlink4 aimms-link5 aimms-unlink5
+aimms-anchor aimms-flag aimms-flag2 aimms-flag3 aimms-flag4 aimms-flag5 aimms-flag6 aimms-flag7
+aimms-flag8 aimms-attachment aimms-attachment2 aimms-eye aimms-eye-plus aimms-eye-minus
+aimms-eye-blocked aimms-eye2 aimms-eye-blocked2 aimms-eye3 aimms-eye-blocked3 aimms-eye4
+aimms-bookmark2 aimms-bookmark3 aimms-bookmarks aimms-bookmark4 aimms-spotlight2 aimms-starburst
+aimms-snowflake aimms-temperature aimms-temperature2 aimms-weather-lightning
+aimms-weather-lightning2 aimms-weather-rain aimms-weather-rain2 aimms-weather-snow
+aimms-weather-snow2 aimms-weather-cloud-wind aimms-weather-cloud-wind2 aimms-weather-cloud-sun
+aimms-weather-cloud-sun2 aimms-weather-cloudy aimms-weather-cloudy2 aimms-weather-sun-wind
+aimms-weather-sun-wind2 aimms-sun aimms-sun2 aimms-moon aimms-day-night aimms-day-night2
+aimms-weather-windy aimms-fan aimms-umbrella aimms-sun3 aimms-contrast aimms-brightness-contrast
+aimms-brightness-high aimms-brightness-medium aimms-brightness-low aimms-bed aimms-bed2
+aimms-furniture aimms-chair aimms-star-empty aimms-star-empty2 aimms-star-full aimms-star-empty3
+aimms-star-half aimms-star-full2 aimms-star aimms-heart aimms-heart2 aimms-heart3 aimms-heart4
+aimms-heart-broken aimms-heart5 aimms-heart6 aimms-heart-broken2 aimms-heart7 aimms-heart8
+aimms-heart-broken3 aimms-lips aimms-lips2 aimms-thumbs-up aimms-thumbs-up2 aimms-thumbs-down
+aimms-thumbs-down2 aimms-thumbs-up3 aimms-thumbs-down3 aimms-height aimms-man aimms-woman
+aimms-man-woman aimms-male aimms-female aimms-peace aimms-yin-yang aimms-happy aimms-happy2
+aimms-smile aimms-smile2 aimms-tongue aimms-tongue2 aimms-sad aimms-sad2 aimms-wink aimms-wink2
+aimms-grin aimms-grin2 aimms-cool aimms-cool2 aimms-angry aimms-angry2 aimms-evil aimms-evil2
+aimms-shocked aimms-shocked2 aimms-baffled aimms-baffled2 aimms-confused aimms-confused2
+aimms-neutral aimms-neutral2 aimms-hipster aimms-hipster2 aimms-wondering aimms-wondering2
+aimms-sleepy aimms-sleepy2 aimms-frustrated aimms-frustrated2 aimms-crying aimms-crying2
+aimms-cursor aimms-cursor2 aimms-lasso aimms-lasso2 aimms-select aimms-select2 aimms-point-up
+aimms-point-right aimms-point-down aimms-point-left aimms-pointer aimms-reminder
+aimms-drag-left-right aimms-drag-left aimms-drag-right aimms-touch aimms-multitouch aimms-touch-zoom
+aimms-touch-pinch aimms-hand aimms-grab aimms-stack-empty aimms-stack-plus aimms-stack-minus
+aimms-stack-star aimms-stack-picture aimms-stack-down aimms-stack-up aimms-stack-cancel
+aimms-stack-check aimms-stack-text aimms-stack-clubs aimms-stack-spades aimms-stack-hearts
+aimms-stack-diamonds aimms-stack-user aimms-stack4 aimms-stack-music aimms-stack-play aimms-move
+aimms-dots aimms-warning aimms-warning2 aimms-notification aimms-notification2 aimms-question
+aimms-question2 aimms-question3 aimms-question4 aimms-question5 aimms-question6 aimms-plus
+aimms-minus aimms-plus2 aimms-minus2 aimms-plus3 aimms-minus3 aimms-plus-circle aimms-minus-circle
+aimms-plus-circle2 aimms-minus-circle2 aimms-info aimms-info2 aimms-cancel-circle
+aimms-cancel-circle2 aimms-blocked aimms-cancel-square aimms-cancel-square2 aimms-cancel aimms-spam
+aimms-cross aimms-cross2 aimms-cross3 aimms-checkmark aimms-checkmark2 aimms-checkmark3
+aimms-checkmark4 aimms-checkmark5 aimms-spell-check aimms-spell-check2 aimms-enter aimms-exit
+aimms-enter2 aimms-exit2 aimms-enter3 aimms-exit3 aimms-wall aimms-fence aimms-play3 aimms-pause
+aimms-stop aimms-previous aimms-next aimms-backward aimms-forward2 aimms-play4 aimms-pause2
+aimms-stop2 aimms-backward2 aimms-forward3 aimms-first aimms-last aimms-previous2 aimms-next2
+aimms-eject aimms-volume-high aimms-volume-medium aimms-volume-low aimms-volume-mute
+aimms-speaker-left aimms-speaker-right aimms-volume-mute2 aimms-volume-increase
+aimms-volume-decrease aimms-volume-high2 aimms-volume-medium2 aimms-volume-medium3 aimms-volume-low2
+aimms-volume-mute3 aimms-volume-increase2 aimms-volume-decrease2 aimms-volume-decrease3
+aimms-volume-5 aimms-volume-4 aimms-volume-3 aimms-volume-2 aimms-volume-1 aimms-volume-0
+aimms-volume-mute4 aimms-volume-mute5 aimms-loop aimms-loop2 aimms-loop3 aimms-infinite-square
+aimms-infinite aimms-infinite2 aimms-loop4 aimms-shuffle aimms-shuffle2 aimms-wave aimms-wave2
+aimms-split aimms-merge aimms-first2 aimms-last2 aimms-arrow-up aimms-arrow-up2 aimms-arrow-up3
+aimms-arrow-up4 aimms-arrow-right aimms-arrow-right2 aimms-arrow-right3 aimms-arrow-right4
+aimms-arrow-down aimms-arrow-down2 aimms-arrow-down3 aimms-arrow-down4 aimms-arrow-left
+aimms-arrow-left2 aimms-arrow-left3 aimms-arrow-left4 aimms-arrow-up5 aimms-arrow-right5
+aimms-arrow-down5 aimms-arrow-left5 aimms-arrow-up-left aimms-arrow-up6 aimms-arrow-up-right
+aimms-arrow-right6 aimms-arrow-down-right aimms-arrow-down6 aimms-arrow-down-left aimms-arrow-left6
+aimms-arrow-up-left2 aimms-arrow-up7 aimms-arrow-up-right2 aimms-arrow-right7
+aimms-arrow-down-right2 aimms-arrow-down7 aimms-arrow-down-left2 aimms-arrow-left7
+aimms-arrow-up-left3 aimms-arrow-up8 aimms-arrow-up-right3 aimms-arrow-right8
+aimms-arrow-down-right3 aimms-arrow-down8 aimms-arrow-down-left3 aimms-arrow-left8 aimms-circle-up
+aimms-circle-right aimms-circle-down aimms-circle-left aimms-circle-up2 aimms-circle-right2
+aimms-circle-down2 aimms-circle-left2 aimms-circle-up-left aimms-circle-up3 aimms-circle-up-right
+aimms-circle-right3 aimms-circle-down-right aimms-circle-down3 aimms-circle-down-left
+aimms-circle-left3 aimms-circle-up-left2 aimms-circle-up4 aimms-circle-up-right2 aimms-circle-right4
+aimms-circle-down-right2 aimms-circle-down4 aimms-circle-down-left2 aimms-circle-left4
+aimms-arrow-resize aimms-arrow-resize2 aimms-arrow-resize3 aimms-arrow-resize4 aimms-arrow-resize5
+aimms-arrow-resize6 aimms-arrow-resize7 aimms-arrow-resize8 aimms-square-up-left aimms-square-up
+aimms-square-up-right aimms-square-right aimms-square-down-right aimms-square-down
+aimms-square-down-left aimms-square-left aimms-arrow-up9 aimms-arrow-right9 aimms-arrow-down9
+aimms-arrow-left9 aimms-arrow-up10 aimms-arrow-right10 aimms-arrow-down10 aimms-arrow-left10
+aimms-arrow-up-left4 aimms-arrow-up11 aimms-arrow-up-right4 aimms-arrow-right11
+aimms-arrow-down-right4 aimms-arrow-down11 aimms-arrow-down-left4 aimms-arrow-left11
+aimms-arrow-up-left5 aimms-arrow-up12 aimms-arrow-up-right5 aimms-arrow-right12
+aimms-arrow-down-right5 aimms-arrow-down12 aimms-arrow-down-left5 aimms-arrow-left12
+aimms-arrow-up13 aimms-arrow-right13 aimms-arrow-down13 aimms-arrow-left13 aimms-arrow-up14
+aimms-arrow-right14 aimms-arrow-down14 aimms-arrow-left14 aimms-circle-up5 aimms-circle-right5
+aimms-circle-down5 aimms-circle-left5 aimms-circle-up6 aimms-circle-right6 aimms-circle-down6
+aimms-circle-left6 aimms-arrow-up15 aimms-arrow-right15 aimms-arrow-down15 aimms-arrow-left15
+aimms-arrow-up16 aimms-arrow-right16 aimms-arrow-down16 aimms-arrow-left16 aimms-menu-open
+aimms-menu-open2 aimms-menu-close aimms-menu-close2 aimms-enter4 aimms-enter5 aimms-esc aimms-enter6
+aimms-backspace aimms-backspace2 aimms-tab aimms-transmission aimms-transmission2 aimms-sort
+aimms-sort2 aimms-move-up aimms-move-down aimms-sort-alpha-asc aimms-sort-alpha-desc
+aimms-sort-numeric-asc aimms-sort-numberic-desc aimms-sort-amount-asc aimms-sort-amount-desc
+aimms-sort-time-asc aimms-sort-time-desc aimms-battery-6 aimms-battery-5 aimms-battery-4
+aimms-battery-3 aimms-battery-2 aimms-battery-1 aimms-battery-0 aimms-battery-charging
+aimms-key-keyboard aimms-key-A aimms-key-up aimms-key-right aimms-key-down aimms-key-left
+aimms-command aimms-shift aimms-ctrl aimms-opt aimms-checkbox-checked aimms-checkbox-unchecked
+aimms-checkbox-partial aimms-square aimms-triangle aimms-triangle2 aimms-diamond3 aimms-diamond4
+aimms-checkbox-checked2 aimms-checkbox-unchecked2 aimms-checkbox-partial2 aimms-radio-checked
+aimms-radio-checked2 aimms-radio-unchecked aimms-toggle-on aimms-toggle-off aimms-checkmark-circle
+aimms-circle aimms-circle2 aimms-circles aimms-circles2 aimms-crop aimms-crop2 aimms-make-group
+aimms-ungroup aimms-vector aimms-vector2 aimms-rulers aimms-ruler aimms-pencil-ruler aimms-scissors
+aimms-scissors2 aimms-scissors3 aimms-haircut aimms-comb aimms-filter aimms-filter2 aimms-filter3
+aimms-filter4 aimms-font aimms-ampersand aimms-ligature aimms-ligature2 aimms-font-size
+aimms-typography aimms-text-height aimms-text-width aimms-height2 aimms-width aimms-bold
+aimms-underline aimms-italic aimms-strikethrough aimms-strikethrough2 aimms-font-size2 aimms-bold2
+aimms-underline2 aimms-italic2 aimms-strikethrough3 aimms-omega aimms-sigma aimms-nbsp
+aimms-page-break aimms-page-break2 aimms-superscript aimms-subscript aimms-superscript2
+aimms-subscript2 aimms-text-color aimms-highlight aimms-pagebreak aimms-clear-formatting aimms-table
+aimms-table2 aimms-insert-template aimms-pilcrow aimms-ltr aimms-rtl aimms-ltr2 aimms-rtl2
+aimms-section aimms-paragraph-left aimms-paragraph-center aimms-paragraph-right
+aimms-paragraph-justify aimms-paragraph-left2 aimms-paragraph-center2 aimms-paragraph-right2
+aimms-paragraph-justify2 aimms-indent-increase aimms-indent-decrease aimms-paragraph-left3
+aimms-paragraph-center3 aimms-paragraph-right3 aimms-paragraph-justify3 aimms-indent-increase2
+aimms-indent-decrease2 aimms-share aimms-share2 aimms-new-tab aimms-new-tab2 aimms-popout
+aimms-embed aimms-embed2 aimms-markup aimms-regexp aimms-regexp2 aimms-code aimms-circle-css
+aimms-circle-code aimms-terminal aimms-unicode aimms-seven-segment-0 aimms-seven-segment-1
+aimms-seven-segment-2 aimms-seven-segment-3 aimms-seven-segment-4 aimms-seven-segment-5
+aimms-seven-segment-6 aimms-seven-segment-7 aimms-seven-segment-8 aimms-seven-segment-9 aimms-share3
+aimms-share4 aimms-mail aimms-mail2 aimms-mail3 aimms-mail4 aimms-amazon aimms-google aimms-google2
+aimms-google3 aimms-google-plus aimms-google-plus2 aimms-google-plus3 aimms-hangouts
+aimms-google-drive aimms-facebook aimms-facebook2 aimms-instagram aimms-whatsapp aimms-spotify
+aimms-telegram aimms-twitter aimms-vine aimms-vk aimms-renren aimms-sina-weibo aimms-rss aimms-rss2
+aimms-youtube aimms-twitch aimms-vimeo aimms-vimeo2 aimms-lanyrd aimms-flickr aimms-flickr2
+aimms-flickr3 aimms-flickr4 aimms-dribbble aimms-behance aimms-behance2 aimms-deviantart aimms-500px
+aimms-steam aimms-steam2 aimms-dropbox aimms-onedrive aimms-github aimms-npm aimms-basecamp
+aimms-trello aimms-wordpress aimms-joomla aimms-ello aimms-blogger aimms-blogger2 aimms-tumblr
+aimms-tumblr2 aimms-yahoo aimms-yahoo2 aimms-tux aimms-appleinc aimms-finder aimms-android
+aimms-windows aimms-windows8 aimms-soundcloud aimms-soundcloud2 aimms-skype aimms-reddit
+aimms-hackernews aimms-wikipedia aimms-linkedin aimms-linkedin2 aimms-lastfm aimms-lastfm2
+aimms-delicious aimms-stumbleupon aimms-stumbleupon2 aimms-stackoverflow aimms-pinterest
+aimms-pinterest2 aimms-xing aimms-xing2 aimms-flattr aimms-foursquare aimms-yelp aimms-paypal
+aimms-chrome aimms-firefox aimms-IE aimms-edge aimms-safari aimms-opera aimms-file-pdf
+aimms-file-openoffice aimms-file-word aimms-file-excel aimms-libreoffice aimms-html-five
+aimms-html-five2 aimms-css3 aimms-git aimms-codepen aimms-svg aimms-IcoMoon
 ```
 
 ## External references
