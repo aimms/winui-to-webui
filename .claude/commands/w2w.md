@@ -1,6 +1,6 @@
 # /w2w — Convert WinUI project to WebUI
 
-Runs `w2w.exe` on an AIMMS project to generate a preliminary `webui.json`. Assumes `w2w.exe` is on the PATH.
+Runs `WinUI_to_WebUI.exe` on an AIMMS project to generate a preliminary `webui.json`. Assumes `WinUI_to_WebUI.exe` is on the PATH.
 
 **Before running: make sure the project is committed or backed up — w2w writes directly into the project folder.**
 
@@ -13,11 +13,11 @@ Runs `w2w.exe` on an AIMMS project to generate a preliminary `webui.json`. Assum
 
 Glob for `*.aimms` in the project directory (not recursive). There must be exactly one; report an error and stop if not.
 
-## 3. Run w2w
+## 3. Run WinUI_to_WebUI
 
 ```
 cd <projectdir>
-w2w
+WinUI_to_WebUI
 ```
 
 Wait for it to complete. Progress is printed to the console. Warnings are non-fatal; an error with a non-zero exit code means the conversion failed.

@@ -16,7 +16,7 @@ def initialize_aimms_model( am_pn:str) -> Model:
     """
     aimms_project = Project(
         # path to the AIMMS Bin folder  
-        aimms_path=find_aimms_path("26.6"),
+        aimms_path=find_aimms_path("26.8.1.2"),
 
         # Path to the AIMMS project file .
         #aimms_project_file=projectfile,

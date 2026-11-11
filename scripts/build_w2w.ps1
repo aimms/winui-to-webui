@@ -3,7 +3,7 @@ param(
 )
 
 <#
-Ensures the project .venv exists and is in sync ('uv sync'), then builds dist/w2w.exe
+Ensures the project .venv exists and is in sync ('uv sync'), then builds dist/WinUI_to_WebUI.exe
 from w2w.spec, using the project's own .venv (not system Python) -
 that .venv holds the real runtime dependencies (aimmspy, lxml, pandas, PySide6, ...).
 Building with a Python that lacks aimmspy produces an exe that fails every conversion
@@ -64,9 +64,9 @@ try {
     Pop-Location
 }
 
-$exePath = Join-Path $repoRoot "dist\w2w.exe"
+$exePath = Join-Path $repoRoot "dist\WinUI_to_WebUI.exe"
 if ($buildExitCode -ne 0 -or -not (Test-Path $exePath)) {
-    Write-Error "Build failed - dist\w2w.exe was not produced."
+    Write-Error "Build failed - dist\WinUI_to_WebUI.exe was not produced."
     exit 1
 }
 

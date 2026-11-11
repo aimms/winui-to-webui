@@ -4,8 +4,8 @@
 
 ## Prerequisites
 
-- `w2w.exe` — obtain a copy from your team or build it from source (see [building.md](building.md))
-- AIMMS 26.6 installed — `w2w` opens the project with the latest installed 26.6.x
+- `WinUI_to_WebUI.exe` — obtain a copy from your team or build it from source (see [building.md](building.md))
+- AIMMS 26.8.1.2 installed — `WinUI_to_WebUI` opens the project with AIMMS 26.8.1.2
 - A project without WebUI gets the WebUI repository library 26.12.5.5 added; a project that already references WebUI keeps its own version
 
 ## Before you start: back up your project
@@ -25,7 +25,7 @@ If you are not using source control, make a manual backup of the entire project 
    ```
 3. Run the tool:
    ```
-   w2w
+   WinUI_to_WebUI
    ```
 
 The tool will:
@@ -40,7 +40,7 @@ Progress is printed to the console. A successful run may include `Warning:` line
 By default `w2w` rebuilds the entire `webui.json` for every component from scratch, discarding any manual edits made in the WebUI editor. To iterate on one page without disturbing the rest of an already-converted, hand-tuned WebUI, pass `--page`:
 
 ```
-w2w --page pageName
+WinUI_to_WebUI --page pageName
 ```
 
 `pageName` must match the `Name` attribute of the page in `PageManager.xml` (the same name used for its `Pages\<pageName>.xml` file) — not the WebUI slug.
@@ -54,7 +54,7 @@ Note: the tool still processes every page internally on each run (needed to keep
 WinUI data coloring (a table's `Colors`/`Background_Color`, a chart's `Color`) is **not** converted by default: the generated stylesheet still colors widgets that don't use coloring, so it is opt-in for now. To convert it, pass `--colors`:
 
 ```
-w2w --colors
+WinUI_to_WebUI --colors
 ```
 
 This turns each coloring into a `webui::AnnotationsIdentifier` on the colored identifier, creates the `giim::s_AllColors` color set (with `p_Red`/`p_Green`/`p_Blue`/`p_ColorSlug`), and writes `WebUI\resources\css\w2w-color.css` in the main model. Without `--colors`, none of this is generated, and a `w2w-color.css` left behind by an earlier `--colors` run is removed. Can be combined with `--page` and `--newcolorset`.
@@ -64,10 +64,10 @@ This turns each coloring into a `webui::AnnotationsIdentifier` on the colored id
 A WinUI Network Object becomes either a WebUI **Map** widget (nodes placed by latitude/longitude) or a WebUI **Diagram** widget (nodes placed by x/y). Choose with `--network`:
 
 ```
-w2w --network=auto
-w2w --network=map
-w2w --network=diagram
-w2w --network=ignore
+WinUI_to_WebUI --network=auto
+WinUI_to_WebUI --network=map
+WinUI_to_WebUI --network=diagram
+WinUI_to_WebUI --network=ignore
 ```
 
 `auto` (the default) decides per Network Object:
@@ -78,12 +78,12 @@ w2w --network=ignore
 
 `map` and `diagram` force that widget for every Network Object converted in the run. `ignore` converts no Network Object at all - they get no widget and take no space in the page's grid (their number is reported at the end of the conversion log). The choice and its reason are recorded per object in `<project>_conversion.md`.
 
-To mix choices within one project, combine `--network` with `--page`: convert the whole project once with the default, then reconvert an individual page whose Network Object should be the other widget, e.g. `w2w --page "Network Tie Flows" --network=map`. Only that page is rewritten in `webui.json`.
+To mix choices within one project, combine `--network` with `--page`: convert the whole project once with the default, then reconvert an individual page whose Network Object should be the other widget, e.g. `WinUI_to_WebUI --page "Network Tie Flows" --network=map`. Only that page is rewritten in `webui.json`.
 
 Notes:
 
 - A WebUI Diagram currently supports one arc set per widget. Only the first arc set of a Network Object is converted to a diagram; the others are listed in the conversion log.
-- Diagram coordinates are rescaled from the WinUI visible area to a drawing space the size of the WinUI object times `--diagram-spread` (default 2.5), with the Y axis flipped; the diagram's initial zoom is 1/spread. WebUI draws each node as a labelled box, much larger than WinUI's dot, so the spread gives them room - e.g. `w2w --diagram-spread 4` for more, `--diagram-spread 1` for WinUI's own pixel size. This is done by generated parameters (`p_diagram_x_…`/`p_diagram_y_…`) in the generated interface module.
+- Diagram coordinates are rescaled from the WinUI visible area to a drawing space the size of the WinUI object times `--diagram-spread` (default 2.5), with the Y axis flipped; the diagram's initial zoom is 1/spread. WebUI draws each node as a labelled box, much larger than WinUI's dot, so the spread gives them room - e.g. `WinUI_to_WebUI --diagram-spread 4` for more, `--diagram-spread 1` for WinUI's own pixel size. This is done by generated parameters (`p_diagram_x_…`/`p_diagram_y_…`) in the generated interface module.
 - GIS background layers, node/arc sizes, shapes and colors are not converted.
 - When the WinUI visible area is computed at run time, the map's bounds are left unset (see the conversion log).
 
@@ -92,7 +92,7 @@ Notes:
 A page whose grid matches one of WebUI's standard layouts uses that standard layout. Every other page gets its own custom grid layout by default, so editing one page's layout in the WebUI editor never changes another page. To let pages with the same custom grid shape share one layout instead, pass `--share-layouts`:
 
 ```
-w2w --share-layouts
+WinUI_to_WebUI --share-layouts
 ```
 
 Sharing keeps `webui.json` smaller, but then a layout edit on one page shows up on every page that shares it.
@@ -104,7 +104,7 @@ AIMMS's built-in `AllColors` system set isn't usable as-is by WebUI. Normally, `
 To instead repoint *every* `ElementParameter` anywhere in the project whose `Range` is (case-insensitively) `AllColors` — including ones no converted widget currently references — pass `--newcolorset`:
 
 ```
-w2w --newcolorset
+WinUI_to_WebUI --newcolorset
 ```
 
 This can be combined with `--page`. It's off by default since it touches identifiers outside anything the current conversion run itself needs.
@@ -122,6 +122,6 @@ Review the changes in your source control diff, or compare manually against your
 
 | Message | Cause |
 |---|---|
-| `No .aimms file found in the current directory` | Run `w2w` from the folder that contains the `.aimms` file |
+| `No .aimms file found in the current directory` | Run `WinUI_to_WebUI` from the folder that contains the `.aimms` file |
 | `Multiple .aimms files found` | The folder contains more than one `.aimms` file; remove or move the extras |
 | `Project folder '...' does not exist` | Internal error — the detected path no longer exists |

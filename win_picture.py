@@ -81,8 +81,10 @@ def winpage_picture(webui: web_page.WebUI, aimms_model: Model, gii_dict: dict, c
                     literal_picture = picture_path.name
                 else:
                     converter_logging.exoticW([
-                        f"Picture object on {page_name} uses {literal_picture}.  But this image does not exist"],
+                        f"Picture object on {page_name} uses {literal_picture}.  But this image does not exist, so no image widget is created"],
                         component_dict, "purpose: picture", page_name)
+                    # A literal image that cannot be found: omit the widget altogether.
+                    return
                 info_dict["LiteralPicture"] = literal_picture
                 info_dict["IsLiteral"] = is_literal
             else:
