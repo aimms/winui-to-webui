@@ -8,7 +8,7 @@ We're happy to support your efforts and improve the context of your usage. To th
 
 The code is shared in its current state, without guarantees or warranties regarding correctness, performance, or freedom from bugs.
 
-### Commercial limitations
+### Commerical limitations
 
 - No permission to commercialize, sub-license or sell.
 
