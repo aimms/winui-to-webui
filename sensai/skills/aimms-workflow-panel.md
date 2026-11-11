@@ -134,7 +134,9 @@ StringParameter WorkflowSteps {
 ```
 
 One line per field, a blank line between steps. The braces in
-`Definition: { ... }` are the definition value itself.
+`Definition: { ... }` are the definition value itself: use the `Definition`
+attribute as a list expression. Do not switch this to `Initial data`; that form
+would need `data { ... }`, which this skill should not generate.
 No comma after the last entry. `generate` produces exactly this.
 
 | Field | Value |
@@ -690,10 +692,10 @@ if __name__ == "__main__":
 
 ## Available icons
 
-These are all 1609 names in `webui::AIMMSIcons`, read from the model
-(`webui::AIMMSIcons := data { ... }`). An icon must be one of them, exactly as
-written and with the `aimms-` prefix. Search this list (grep) for a name that
-fits the page instead of guessing. Names are case-sensitive, e.g. `aimms-IcoMoon`.
+These are all 1609 names in `webui::AIMMSIcons`, read from the model. An icon
+must be one of them, exactly as written and with the `aimms-` prefix. Search
+this list (grep) for a name that fits the page instead of guessing. Names are
+case-sensitive, e.g. `aimms-IcoMoon`.
 
 ```text
 aimms-home aimms-home2 aimms-home3 aimms-home4 aimms-home5 aimms-home6 aimms-home7 aimms-home8

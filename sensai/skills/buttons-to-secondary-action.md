@@ -6,250 +6,254 @@ allowed-tools: Bash(python -I *buttons_to_secondary_action.py *), Bash(git statu
 
 # Buttons to secondary actions
 
-Moves some or all button widgets on a WebUI page to **secondary page
-actions**: entries in the action menu at the bottom right of the page (see
-[Configuring secondary actions](https://documentation.aimms.com/webui/page-settings.html#configuring-secondary-actions)).
-Each moved button becomes one action with the same text and procedure. The
-buttons themselves are **not deleted**: they go to the page's
-**Unassigned widgets** area, where they no longer show but can be dragged back
-in the WebUI editor. No other widget or page is touched.
+Move some or all button widgets on a WebUI page to **secondary page actions**:
+entries in the action menu at the bottom right of the page. The buttons are
+**not deleted**. They are moved to the page's **Unassigned widgets** area, so
+they disappear from the page but can still be dragged back in the WebUI editor.
+No other widget or page should change.
 
-Built from a working example (AIMMS 26.x, webui.json version 4.67.0): page
-`home` with three buttons `button_wrk1..3` (procedures `pr_wrk1..3`), and page
-`worked` offering the same three actions as secondary actions through
-`sp_homepage_secondary_actions`.
+This skill stays in **one `.md` file** on purpose. The helper Python script is
+embedded below in [Helper script](#helper-script-buttons_to_secondary_actionpy),
+so the skill can be uploaded as a single file to AIMMS Cloud.
 
-This skill is a single file. The helper script it needs is included below in
-[Helper script](#helper-script-buttons_to_secondary_actionpy). Before the first
-step, write that code block verbatim to a temporary file (your scratchpad, or a
-temp folder; not inside the user's project) named
-`buttons_to_secondary_action.py`, and run it with
-`python -I <that path> <subcommand> <webui.json> ...`. Do not embed the whole
-helper in a long inline `python -c` command or generate such a command: copy
-the code block itself into the temporary file, or extract that fenced code
-block from this skill file with the file tools and then run the file. It uses
-the standard library only. Hand-editing `webui.json` is error-prone, so use the
-script for it. The `.ams` edit is yours.
+## Use this skill when
 
-Pass `--skill <path of this .md file>` to `move` and `check`: the script then
-validates every icon against the [Available icons](#available-icons) list in
-this file.
+Use it when the user asks to:
 
-## Inputs to settle first
+- move buttons to secondary actions,
+- replace visible page buttons with the page-action menu,
+- create or extend `secondarypageactions`, or
+- create the corresponding `StringParameter` over
+  `webui::indexPageExtension, webui::indexPageActionSpec`.
 
-1. **Project paths.** Find `MainProject/WebUI/webui.json` and the model `.ams`
-   (usually `MainProject/<name>.ams`). Ask if there are several.
-2. **Page and buttons.** Run `list` (or `list --page <slug>`) to show each
-   page's buttons with title, procedure and grid area. If the user didn't say
-   which page or which buttons, ask. "All buttons" means `--all`: every button
-   that is placed on the page (buttons already in Unassigned widgets are not
-   taken). The order you pass in `--buttons` becomes the order in the menu.
-   Pages converted from WinUI often carry leftover buttons that are already
-   `UNASSIGNED`, titled with their own widget name or used for navigation
-   (`Main Navigation`, page names, `Quit`), calling `giim::pr_action_sequence_...`
-   procedures that are empty or only `webui::OpenPage`. When the user says
-   "the action buttons", take the placed buttons that call real model
-   procedures. Name the leftovers you skipped, but don't move them without
-   being asked.
-3. **Icons.** Buttons have no icon, but each action shows one. Pick one
-   `aimms-...` icon per button that fits its title from the
-   [Available icons](#available-icons) list below (grep this file for a word
-   from the title), and write a JSON map `{"<widget uri>": "aimms-xyz"}` to a
-   temporary file for `--icons`. Don't invent names; they are case-sensitive.
-   A button without an entry gets the default icon (`aimms-office`); tell the
-   user which buttons got it.
-4. **Identifier.** Default `sp_<slug>_secondary_actions`; `--identifier` sets
-   another. If the page already has secondary actions, the script reuses that
-   identifier and appends after its last entry. Buttons whose procedure is
-   already an action there get no new row; they are only moved.
+## Working principles
 
-## Procedure
+- Prefer a **preview first**, then apply.
+- Keep the conversion **reversible**: do not delete the source buttons.
+- Use the embedded Python helper for `webui.json`; hand-editing that file is
+  too error-prone.
+- Keep the model change separate from the `webui.json` change: first create the
+  page extension, then create or extend the `StringParameter`.
+- After the model change, do an explicit **compile check** before claiming the
+  work is finished.
 
-1. **Safety.** Check `git status` and `git check-ignore` on both files:
-   converted apps often sit in an ignored `work/` folder, so git can't restore
-   them. Before each write the script copies `webui.json` to
-   `webui.json.buttons-to-secondary-action.bak`. Copy the `.ams` yourself (for
-   example to `<name>.ams.buttons-to-secondary-action.bak`) before editing it
-   when it isn't tracked. Don't use an existing `webui.json.bak` to judge the
-   diff: other skills leave older snapshots under that name. AIMMS does not
-   need to be closed, but the WebUI rewrites `webui.json` on save: the user
-   should not save from the WebUI editor while you work, and may need to
-   reload or reopen the project before changes show.
-2. **Preview.** Run
-   `move <webui.json> --page <slug> --buttons <uri1,uri2> --icons map.json --skill <this .md> --ams <model.ams> --dry-run`
-   (or `--all` instead of `--buttons`). Show the user the action list and
-   every NOTE/WARN/ERROR:
-   - **ERROR**: title bound to an identifier, no procedure action, or an icon
-     not in the list. A title or procedure can't be copied as data: ask the
-     user; `--force` moves anyway and leaves a placeholder for you to fix in
-     the `.ams`. A wrong icon: pick another from the list.
-   - **options not carried over**: anything other than title and action, such
-     as a tooltip, styling or a `visible`/`disabled` binding. Secondary actions
-     have only `displaytext`, `icon`, `procedure` and `state`. For visibility or
-     enablement, see [Dynamic state](#dynamic-state).
-   - More than 5 actions: AIMMS recommends about 5. More than 10: only 10 show.
-3. **Apply.** Run the same command without `--dry-run`, with
-   `--out snippet.ams` (write it to the same temporary folder). For each chosen
-   button it sets the binding's `gridArea` to `Unassigned widgets` (creating the
-   binding if there is none). The widget stays in the page's `widgets` list and
-   its `widgets/<uri>` definition stays as it is. It adds `secondarypageactions`
-   to the page. Rerunning is safe. Empty grid areas that result are not
-   removed; tell the user.
-4. **Write the model code.** The snippet is either a whole `StringParameter`
-   declaration or, if the identifier already exists in the `.ams`, the rows to
-   append. Put a new declaration near the procedures it calls or in a
-   `DeclarationSection` such as `Page_Actions`. Keep the file's tab
-   indentation, keep `Definition: { { ... } }`, and put no comma after the last
-   entry. When appending, add a comma after the old last entry. See
-   [Model declaration](#model-declaration-ams).
-5. **Check.** Run
-   `check <webui.json> --page <slug> --ams <model.ams> --skill <this .md>`.
-   Fix every ERROR and report every WARN. See [Troubleshooting](#troubleshooting).
-6. **Hand off.** You can't run AIMMS, so don't claim it works. Tell the user to
-   reopen the project, compile (a compile error leaves the WebUI empty), open
-   the page and confirm that the buttons are gone from the page, that they sit
-   under Unassigned widgets in the page editor, and that the action menu at the
-   bottom right shows each action with its icon and runs its procedure.
+## First settle these inputs
 
-## What to report
+1. **Project files**
+   Find:
+   - `MainProject/WebUI/webui.json`
+   - the model source file, usually `MainProject/<project>.ams`
 
-State which buttons moved (and which were skipped, with the reason), the
-identifier, the icons chosen (and any default icons), the files changed, what
-`check` found, and what only the user can verify (icons render, procedures run).
+   If there are several plausible `.ams` files, ask which one holds the WebUI
+   support declarations.
 
-## Formats
+2. **Target page**
+   Use the helper's `list` command, optionally with `--page <slug>`, to inspect
+   pages and buttons before changing anything.
 
-### Before: buttons on a page (webui.json)
+3. **Which buttons to move**
+   If the user did not specify them exactly, ask. Keep this distinction clear:
+   - `--all` means every button on the page that is still placed on the page.
+   - Buttons already in `Unassigned widgets` are not moved again.
+   - Converted WinUI pages often contain leftover navigation buttons; do not
+     move those unless the user asks.
 
-The page lists the widget in `widgets` and places it in `bindings`. The widget
-definition is a separate top-level `widgets/<uri>` object.
+4. **Icons**
+   Each secondary action needs an icon. Choose one `aimms-...` icon per button
+   from the model set `webui::AIMMSIcons` - with that exact name and spelling.
+   Do not invent icon names.
 
-```json
-"pages/home": {
-  "aimms.widget.type": { "literal": "pagev2-grid" },
-  "bindings": { "literal": [
-    { "widgetUri": "button_wrk1", "gridArea": "area-a", "dndId": "area-abutton_wrk10" }
-  ] },
-  "layoutId": { "literal": "custom_..." },
-  "widgets": { "literal": [
-    { "uri": "button_wrk1", "layoutInfo": { "width": "2", "height": "1" } }
-  ] }
-},
-"widgets/button_wrk1": {
-  "action": { "literal": { "type": "procedure", "value": "pr_wrk1" } },
-  "aimms.widget.type": { "literal": "button" },
-  "name": { "literal": "button_wrk1" },
-  "title": { "literal": "1 work" }
-}
+   Before running the helper, inspect `webui::AIMMSIcons` and write its element
+   names to a temporary text file, one icon per line, for example
+   `aimmsicons.txt`. Pass that file to the helper with `--icon-list` so the
+   helper validates against the set the model actually exposes.
+
+   Put the selected button-to-icon mapping in a temporary JSON file of the form:
+
+   ```json
+   {"button_uri": "aimms-some-icon"}
+   ```
+
+   A button with no entry gets the helper's default icon `aimms-office`; report
+   every such default explicitly.
+
+5. **Identifier name**
+   Default is `sp_<slug>_secondary_actions`. If the page already has secondary
+   actions, reuse its identifier unless the user explicitly wants to replace
+   that setup.
+
+6. **Dynamic state**
+   Ask whether any source button relied on model-driven visibility or
+   enablement. Secondary actions only support `displaytext`, `icon`,
+   `procedure`, and `state`, so dynamic behavior may need a model-side follow-up.
+
+## Workflow
+
+### Phase 1 — Inspect safely
+
+1. Check both files with `git status` and `git check-ignore`.
+2. If the files are not tracked, make clear that git cannot restore them.
+3. The helper already writes
+   `webui.json.buttons-to-secondary-action.bak` before each write.
+4. If the model file is not tracked, make a backup copy of the `.ams` before
+   editing it.
+5. Remind the user not to save from the WebUI editor while you work, because
+   WebUI can rewrite `webui.json`.
+
+### Phase 2 — Preview exactly what will happen
+
+Run the helper in dry-run mode first:
+
+```text
+python -I <temp>/buttons_to_secondary_action.py move <webui.json> --page <slug> --buttons <uri1,uri2> --icons <icons.json> --icon-list <aimmsicons.txt> --ams <model.ams> --dry-run
 ```
 
-### After: page (webui.json)
+Or use `--all` instead of `--buttons` when that is what the user asked.
 
-The binding moves to Unassigned widgets (the `dndId` is left alone, as the
-WebUI does when a widget is dragged there), and the page gets the
-`secondarypageactions` setting. Page keys are written in alphabetical order.
+Read and report all `NOTE`, `WARN`, and `ERROR` lines.
 
-```json
-"pages/home": {
-  "aimms.widget.type": { "literal": "pagev2-grid" },
-  "bindings": { "literal": [
-    { "widgetUri": "button_wrk1", "gridArea": "Unassigned widgets", "dndId": "area-abutton_wrk10" }
-  ] },
-  "layoutId": { "literal": "custom_..." },
-  "secondarypageactions": {
-    "aimms": {
-      "contents": [ "sp_home_secondary_actions" ],
-      "slices": [ {
-        "identifier": "sp_home_secondary_actions",
-        "slice": [
-          { "index": "webui::indexPageExtension", "type": "free", "value": "webui::indexPageExtension" },
-          { "index": "webui::indexPageActionSpec", "type": "free", "value": "webui::indexPageActionSpec" }
-        ]
-      } ]
+Treat these as blocking unless the user decides otherwise:
+
+- title bound to model data,
+- no procedure action,
+- invalid icon,
+- unsupported widget options that matter functionally,
+- more than 10 resulting actions.
+
+If a button has extra widget options, explain that those options are **not**
+carried over automatically.
+
+### Phase 3 — Apply the WebUI change
+
+Run the same helper command without `--dry-run`, and write the generated AIMMS
+snippet to a temporary file with `--out`.
+
+Expected effect on `webui.json`:
+
+- each chosen button gets `gridArea = "Unassigned widgets"`,
+- the button widget definition remains in place,
+- the page gets `secondarypageactions`,
+- rerunning is safe.
+
+Report exactly which buttons were moved and which were skipped.
+
+### Phase 4 — Apply the model change
+
+Use the generated snippet to create or extend the `StringParameter` that stores
+secondary page actions.
+
+Prefer this order of preference:
+
+1. **If model-editing tools are available on the surface:**
+   create or edit the `StringParameter` with the model tools.
+2. **Otherwise:**
+   patch the `.ams` file carefully with the generated snippet.
+
+Required declaration shape:
+
+```text
+StringParameter sp_<slug>_secondary_actions {
+    IndexDomain: (webui::indexPageExtension,webui::indexPageActionSpec);
+    Definition: {
+        ('1', 'displaytext') : "...",
+        ('1', 'icon'       ) : "aimms-...",
+        ('1', 'procedure'  ) : "...",
+        ('1', 'state'      ) : "Active"
     }
-  },
-  "widgets": { "literal": [
-    { "uri": "button_wrk1", "layoutInfo": { "width": "2", "height": "1" } }
-  ] }
 }
 ```
 
-`widgets/button_wrk1` is unchanged. The `secondarypageactions` object is what
-the Page Settings > Page Extensions dialog writes too, so the two ways are
-interchangeable.
+Use the `Definition` attribute as a list expression. Do not switch this to
+`Initial data`; that form would need `data { ... }`, which is not what this
+skill should generate.
 
-### Model declaration (.ams)
+Rules:
 
-```
-StringParameter sp_home_secondary_actions {
-	IndexDomain: (webui::indexPageExtension,webui::indexPageActionSpec);
-	Definition: {
-		{
-			('1', 'displaytext'  ) : "1 work",
-			('1', 'icon'         ) : "aimms-office",
-			('1', 'procedure'    ) : "pr_wrk1",
-			('1', 'state'        ) : "Active",
+- `displaytext`, `icon`, `procedure`, and `state` are the only supported spec
+  elements here.
+- Use `Active`, `Inactive`, or `Hidden` for `state`.
+- No trailing comma before the closing brace.
+- When appending to an existing definition, continue numbering after the last
+  existing action.
+- When a procedure already exists as an action row, do not add a duplicate row;
+  just move the button.
 
-			('2', 'displaytext'  ) : "2 work",
-			...
-		}
-	}
-}
-```
+### Phase 5 — Validate
 
-| Spec element | Value |
-|---|---|
-| `displaytext` | Menu text (lower case `displaytext`). Taken from the button title. |
-| `icon` | Icon from [Available icons](#available-icons), with the `aimms-` prefix. |
-| `procedure` | Procedure without arguments. Taken from the button action. |
-| `state` | `Active`, `Inactive` (greyed out) or `Hidden`. The default is hidden, so always set it. |
+1. Run the helper's `check` command:
 
-The first index (`'1'`, `'2'`, ...) is the order in the menu. The WebUI shows at
-most 10; AIMMS recommends about 5. The braces in `Definition: { ... }` are the
-definition value itself; the inner `{ ... }` holds the data. No comma after the
-last entry.
+   ```text
+   python -I <temp>/buttons_to_secondary_action.py check <webui.json> --page <slug> --ams <model.ams> --icon-list <aimmsicons.txt>
+   ```
 
-### Dynamic state
+2. If model-editing tools were used, compile after the model edit and fix any
+   compile error before reporting success.
+3. If the `.ams` file was edited as text and this surface cannot compile, say
+   plainly that the static check passed but the AIMMS compile still needs to be
+   confirmed in the project.
 
-A button whose visibility or enablement was bound to the model (for example
-`"visible": {"aimms": {"contents": ["p_canRun"]}}`) loses that behaviour as an
-action. To keep it, the state must come from the model. Two options; ask the
-user which:
+Do not claim success while there is an unresolved `ERROR`, a compile failure, or
+an unreviewed dynamic-state issue.
 
-- Give the declaration no `Definition` and fill it in a procedure (for example
-  in `PostMainInitialization` and wherever `p_canRun` changes):
-  `sp_x('1','state') := if p_canRun then "Active" else "Hidden" endif;`
-- Keep the literal definition with state `Active`; the procedure itself checks
-  the condition and shows a message.
+### Phase 6 — Hand off carefully
 
-`check` only reads literal rows. A parameter filled in a procedure gives a WARN
-that the rows weren't checked.
+Do not say the page works unless it was actually verified. State that the user
+still needs to confirm in AIMMS/WebUI that:
 
-### File writing
+- the buttons disappeared from the page,
+- they are present under Unassigned widgets,
+- the page-action menu shows the new actions,
+- the icons render as expected,
+- the procedures run as intended.
 
-AIMMS writes `webui.json` as `json.dumps(indent=2, ensure_ascii=True)`: non-ASCII
-is escaped (`©` becomes `©`), there is no trailing newline, and the line
-endings are whatever git checked out (often CRLF on Windows). The script keeps
-all of that, so the diff only shows the real change. Keep it too if you ever
-edit the file outside the script.
+## Dynamic state
+
+A source button can have behavior that a secondary action does not copy
+automatically, for example a model-bound `visible` or `disabled` setting.
+If that matters, choose one of these approaches with the user:
+
+- **Model-driven state**
+  Keep or create the `StringParameter`, but assign its `state` values from a
+  procedure such as `PostMainInitialization` and wherever the condition changes.
+- **Procedure-side guard**
+  Keep the action visible and let the called procedure decide whether the action
+  is currently allowed.
+
+If dynamic behavior is important and not yet handled, report it as unfinished.
 
 ## Troubleshooting
 
-- **The WebUI is empty.** The model doesn't compile; check the declaration
-  (trailing comma, unknown procedure, wrong index domain).
-- **No action menu.** `secondarypageactions` is missing or not in the exact
-  format (`check` verifies), or every action's `state` is empty or `Hidden`.
-- **An action is missing.** Only the first 10 show; or its `state` is not
-  `Active`/`Inactive`.
-- **No icon.** The name must match the [Available icons](#available-icons)
-  list exactly, with the `aimms-` prefix.
-- **A button still shows.** Its binding's `gridArea` isn't `Unassigned widgets`
-  (`check` warns when a button that is also an action is still placed). The
-  WebUI rewrites `webui.json` on save; re-run `check` after the user saves in
-  the WebUI if anything looks off.
-- **Undo.** Drag the button back from Unassigned widgets in the page editor and
-  remove its row from the StringParameter, or restore
-  `webui.json.buttons-to-secondary-action.bak` (state right before the last write).
+- **WebUI page is empty**
+  The model likely does not compile. Check the declaration shape, the index
+  domain, commas, and procedure names.
+- **No action menu appears**
+  `secondarypageactions` is missing, malformed, or every action resolves to
+  `Hidden`.
+- **An action is missing**
+  Only the first 10 show, or the state is invalid.
+- **No icon appears**
+  The icon name is not an exact match from `webui::AIMMSIcons`.
+- **A moved button still shows on the page**
+  Its binding did not end up in `Unassigned widgets`, or WebUI overwrote the
+  file afterwards.
+- **Need to undo**
+  Drag the button back from Unassigned widgets and remove its action row, or
+  restore the `.bak` copy of `webui.json`.
+
+## What to report
+
+Always report:
+
+- which page was changed,
+- which buttons were moved,
+- which buttons were skipped and why,
+- which identifier was created or reused,
+- which icons were chosen,
+- where the default icon was used,
+- which files changed,
+- what `check` found,
+- whether the model compiled,
+- what still requires manual verification.
 
 ## Helper script (`buttons_to_secondary_action.py`)
 
@@ -269,11 +273,11 @@ Subcommands (all take the path to MainProject/WebUI/webui.json first):
   list   <webui.json> [--page SLUG]
          pages with their buttons (title, procedure, area) and secondary actions
   move   <webui.json> --page SLUG (--buttons URI[,URI...] | --all)
-         [--icons map.json] [--skill SKILL.md] [--identifier NAME]
+         [--icons map.json] [--icon-list aimmsicons.txt] [--identifier NAME]
          [--ams model.ams] [--force] [--out snippet.ams] [--dry-run]
          put the buttons in 'Unassigned widgets', attach the secondary actions
          to the page, and write the .ams snippet with the action rows
-  check  <webui.json> --page SLUG [--ams model.ams] [--skill SKILL.md]
+  check  <webui.json> --page SLUG [--ams model.ams] [--icon-list aimmsicons.txt]
          static checks, exit code 1 on errors
 
 Run with:  python -I buttons_to_secondary_action.py <subcommand> ...
@@ -428,14 +432,13 @@ def ams_procedures(text):
     return set(re.findall(r"^\s*Procedure\s+([A-Za-z_][\w:]*)", text, re.M))
 
 
-def known_icons(skill_md):
-    """Icon names from the 'Available icons' code block of the skill file."""
-    text = Path(skill_md).read_text(encoding="utf-8")
-    # anchored to the line start, so this line itself (inside the skill file) doesn't match
-    m = re.search(r"^## Available icons$.*?^`{3}text\n(.*?)^`{3}", text, re.S | re.M)
-    if not m:
-        sys.exit(f"error: no 'Available icons' block in {skill_md}")
-    return set(m.group(1).split())
+def known_icons(icon_list_path):
+    """Icon names from a temporary text file exported from webui::AIMMSIcons."""
+    text = Path(icon_list_path).read_text(encoding="utf-8")
+    icons = {line.strip() for line in text.splitlines() if line.strip()}
+    if not icons:
+        sys.exit(f"error: no icons found in {icon_list_path}")
+    return icons
 
 
 def q(s):
@@ -524,7 +527,7 @@ def cmd_move(a):
     done_procs = {v for (_, s), v in ams_rows.items() if s == "procedure"}
 
     icons = json.loads(Path(a.icons).read_text(encoding="utf-8")) if a.icons else {}
-    valid_icons = known_icons(a.skill) if a.skill else None
+    valid_icons = known_icons(a.icon_list) if a.icon_list else None
     actions, errors = [], []
     for uri in chosen:
         info, probs = describe_button(data, uri)
@@ -540,7 +543,7 @@ def cmd_move(a):
             warns.append(f"{uri}: no icon given, using {DEFAULT_ICON}")
         info["icon"] = icons.get(uri, DEFAULT_ICON)
         if valid_icons is not None and info["icon"] not in valid_icons:
-            errors.append(f"{uri}: icon '{info['icon']}' is not in the Available icons list")
+            errors.append(f"{uri}: icon '{info['icon']}' is not in webui::AIMMSIcons")
         if procs is not None and info["procedure"] and info["procedure"] not in procs \
                 and "::" not in info["procedure"]:
             warns.append(f"{uri}: procedure '{info['procedure']}' not found in {Path(a.ams).name}")
@@ -577,9 +580,7 @@ def cmd_move(a):
             f"{ind}StringParameter {identifier} {{",
             f"{ind}\tIndexDomain: (webui::indexPageExtension,webui::indexPageActionSpec);",
             f"{ind}\tDefinition: {{",
-            f"{ind}\t\t{{",
             body,
-            f"{ind}\t\t}}",
             f"{ind}\t}}",
             f"{ind}}}",
         ]) + "\n"
@@ -674,7 +675,7 @@ def cmd_check(a):
             if re.search(r",\s*\}", block):
                 errs.append(f"{identifier}: trailing comma before a closing brace")
             procs = ams_procedures(text)
-            valid_icons = known_icons(a.skill) if a.skill else None
+            valid_icons = known_icons(a.icon_list) if a.icon_list else None
             exts = sorted({e for e, _ in rows}, key=lambda s: (not s.isdigit(), int(s) if s.isdigit() else s))
             if not exts:
                 warns.append(f"{identifier}: no literal rows found (defined by expression?); not checked")
@@ -690,7 +691,7 @@ def cmd_check(a):
                 if icon and not icon.startswith("aimms-"):
                     warns.append(f"{identifier} '{e}': icon '{icon}' lacks the 'aimms-' prefix")
                 if icon and valid_icons is not None and icon not in valid_icons:
-                    errs.append(f"{identifier} '{e}': icon '{icon}' is not in the Available icons list")
+                    errs.append(f"{identifier} '{e}': icon '{icon}' is not in webui::AIMMSIcons")
                 p = r.get("procedure")
                 if p:
                     action_procs.add(p)
@@ -734,7 +735,7 @@ def main():
     g.add_argument("--all", action="store_true",
                    help=f"every button on the page that is not already in '{UNASSIGNED}'")
     s.add_argument("--icons", help="JSON file mapping widget URI -> icon name (aimms-...)")
-    s.add_argument("--skill", help="this skill's .md file; icons are validated against its Available icons list")
+    s.add_argument("--icon-list", help="text file with one icon name per line, exported from webui::AIMMSIcons")
     s.add_argument("--identifier", help="string parameter name (default sp_<slug>_secondary_actions)")
     s.add_argument("--ams", help="model .ams; used to continue numbering and to check procedures")
     s.add_argument("--force", action="store_true", help="move even when a button needs manual work")
@@ -745,7 +746,7 @@ def main():
 
     s = sub.add_parser("check"); s.add_argument("webui")
     s.add_argument("--page", required=True); s.add_argument("--ams")
-    s.add_argument("--skill", help="this skill's .md file; icons are validated against its Available icons list")
+    s.add_argument("--icon-list", help="text file with one icon name per line, exported from webui::AIMMSIcons")
     s.set_defaults(f=cmd_check)
 
     a = ap.parse_args()
@@ -758,10 +759,10 @@ if __name__ == "__main__":
 
 ## Available icons
 
-These are all 1609 names in `webui::AIMMSIcons`, read from the model
-(`webui::AIMMSIcons := data { ... }`). An icon must be one of them, exactly as
-written and with the `aimms-` prefix. Search this list (grep) for a name that
-fits the button instead of guessing. Names are case-sensitive, e.g. `aimms-IcoMoon`.
+These are all 1609 names in `webui::AIMMSIcons`, read from the model. An icon
+must be one of them, exactly as written and with the `aimms-` prefix. Search
+this list (grep) for a name that fits the button instead of guessing. Names are
+case-sensitive, e.g. `aimms-IcoMoon`.
 
 ```text
 aimms-home aimms-home2 aimms-home3 aimms-home4 aimms-home5 aimms-home6 aimms-home7 aimms-home8
