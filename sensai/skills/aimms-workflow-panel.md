@@ -1,7 +1,7 @@
 ---
 name: aimms-workflow-panel
 description: Create a WebUI workflow panel (left-side step navigation) in an AIMMS app, built from a chosen parent page and the pages below it. Use when the user asks for a workflow panel or workflow steps, or mentions webui.json, WorkflowSteps, WorkflowDefinitions or workflows.configuration.
-allowed-tools: Bash(python -I *workflow_panel.py *), Bash(git status *), Bash(git check-ignore *), Read, Grep, Glob, Edit
+allowed-tools: Bash(python -I *workflow_panel.py *), Bash(git status *), Bash(git check-ignore *), Bash(cp *), Read, Grep, Glob, Edit, Write
 ---
 
 # AIMMS workflow panel
@@ -19,8 +19,19 @@ This skill is a single file. The helper script it needs is included below in
 that code block verbatim to a temporary file (your scratchpad, or a temp
 folder; not inside the user's project) named `workflow_panel.py`, and run it
 with `python -I <that path> <subcommand> <webui.json> ...`. Do not embed the
-whole helper in a long inline `python -c` command or generate such a command:
-copy the code block itself into the temporary file, or extract that fenced code
+whole helper in a long inline `python -c` command or generate such a command.
+Use the `Write` tool to create the temporary files (`workflow_panel.py`,
+`snippet.ams`, the icons map). Reuse the same temporary folder for the whole run
+so the path stays the same.
+
+Keep every shell command in the form the pre-approved tools expect, or each one
+triggers an approval prompt: use the Bash tool only (not PowerShell); start the
+command with `python -I` (not `py`, not a full path to python.exe); one command
+per call, with no `cd ... &&` prefix, no pipes and no `2>&1`; and plain
+`git status <path>` / `git check-ignore <path>` without `-C`. Run commands from
+the project folder and pass absolute paths as arguments.
+
+For the helper script: copy the code block itself into the temporary file, or extract that fenced code
 block from this skill file with the file tools and then run the file. It uses
 the standard library only. Hand-editing `webui.json` is error-prone, so use
 the script for it. The `.ams` edit is yours.
@@ -46,7 +57,8 @@ the script for it. The `.ams` edit is yours.
 1. **Safety.** Check `git status` and `git check-ignore` on both files: converted
    apps often sit in an ignored `work/` folder, so git can't restore them. Before
    each write the script copies `webui.json` to `webui.json.workflow-panel.bak`.
-   Copy the `.ams` yourself before editing it when it isn't tracked. AIMMS does not
+   Copy the `.ams` yourself before editing it when it isn't tracked, with a single
+   `cp <model.ams> <model.ams>.workflow-panel.bak` Bash call. AIMMS does not
    need to be closed, but if file changes are not picked up immediately the user
    may need to reload or reopen the project before compiling.
 2. **Preview the steps.** Run
