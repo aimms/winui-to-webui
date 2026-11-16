@@ -72,15 +72,20 @@ the script for it. The `.ams` edit is yours.
    top-level steps or 10 child steps per parent gets a warning; mention it.
 3. **Write the model code.** Put the contents of `snippet.ams` in a
    `DeclarationSection` (for example `Workflow_Support`) in the model `.ams`.
+   If that section sits inside a module or library (for example the converter's
+   `GeneratedInterfaceIdentifiersMain`, prefix `giim`), the identifiers in
+   `webui.json` need that prefix: see [Identifier prefix](#identifier-prefix).
    Keep the file's tab indentation. Keep `{ ... }`: this enables the use of
    expressions after the `:` in each entry.
    No comma after the last entry. See [Model declarations](#model-declarations-ams).
-4. **Write the settings.** Run `settings <webui.json>`. It writes
+4. **Write the settings.** Run `settings <webui.json> --ams <model.ams>`. It writes
    `workflows.configuration` and `workflows.information` into `"application"` in the
    exact format the WebUI needs, and empties stray top-level `aimms.widget.type`
    and `layoutId` keys. It replaces the Application Settings dialog, which you
    can't use. Never use the short form
    `{"aimms": {"contents": ["WorkflowSteps"]}}`; it validates but gives empty pages.
+   `settings` prints the identifier prefix it detected from the `.ams`; report it.
+   Pass `--prefix <p>` only to override it (`--prefix ''` forces none).
 5. **Move the navigation buttons.** Only for pages that are workflow steps
    (skipped and parent pages are left alone). Run
    `unassign <webui.json> --ams <model.ams> --parent <slug> --dry-run` and read
@@ -165,7 +170,8 @@ The step number (second index) is the display order, 1..N, across the whole list
 
 ### Settings in webui.json (exact format)
 
-Both keys go inside the `"application"` object. `settings` writes them.
+Both keys go inside the `"application"` object. `settings` writes them. The
+identifiers are shown without a prefix here; see [Identifier prefix](#identifier-prefix).
 
 ```json
 "workflows.configuration": {
@@ -196,6 +202,28 @@ Both keys go inside the `"application"` object. `settings` writes them.
 
 If the user later changes these in the Application Settings dialog, the dialog
 writes the same format, so the two ways are interchangeable.
+
+### Identifier prefix
+
+`webui.json` refers to `WorkflowSteps` and `WorkflowDefinitions` by name. When
+they are declared inside a module or library, the references must carry that
+module's prefix. Example: they sit in `GeneratedInterfaceIdentifiersMain`, prefix
+`giim`. The three identifiers then read:
+
+```text
+workflows.configuration  literal.identifier              "giim::WorkflowSteps"
+workflows.information    aimms.contents[0]               "giim::WorkflowDefinitions"
+workflows.information    aimms.slices[0].identifier      "giim::WorkflowDefinitions"
+```
+
+The `webui::` index names never get a prefix. `settings` and `check` find the
+prefix themselves: they take the `Prefix` attribute of the innermost `Module` or
+`LibraryModule` around `StringParameter WorkflowSteps` in the file given by
+`--ams`. Outside any module there is no prefix. They stop with a message when
+the module has no `Prefix` attribute or `WorkflowSteps` is not declared yet, and
+warn when the module is nested. `--prefix <p>` overrides the detection and
+`--prefix ''` forces none. Without `--ams` and `--prefix`, `settings` keeps the
+prefix `webui.json` already has, and `check` verifies that one.
 
 ### File writing
 
@@ -234,6 +262,8 @@ Check in this order:
    `layoutId`, `bindings`, `widgets`) outside any `pages/...` object. When the
    WebUI saves the file it empties `aimms.widget.type` and `layoutId` to `{}`;
    `settings` does the same.
+5. The identifiers carry the right prefix (`check` verifies). A reference without
+   the module prefix of the declaration does not resolve and also gives empty pages.
 
 ### Other
 
@@ -254,9 +284,13 @@ Subcommands (all take the path to MainProject/WebUI/webui.json first):
 
   list      <webui.json>                         show the page tree with slugs
   generate  <webui.json> --parent SLUG ...       write the .ams Definition snippet for the workflow
-  settings  <webui.json> [--dry-run]             write workflows.configuration / .information, normalise top-level keys
+  settings  <webui.json> [--ams FILE] [--prefix P] [--dry-run]
+                                               write workflows.configuration / .information, normalise top-level keys
   unassign  <webui.json> --ams FILE --parent SLUG  move navigation buttons of the workflow pages to 'Unassigned widgets'
-  check     <webui.json> [--parent SLUG] [--ams FILE]   static checks, exit code 1 on errors
+  check     <webui.json> [--parent SLUG] [--ams FILE] [--prefix P]   static checks, exit code 1 on errors
+
+The identifiers WorkflowSteps / WorkflowDefinitions need the prefix of the module that
+declares them (e.g. giim::WorkflowSteps). It is detected from --ams; --prefix overrides it.
 
 Run with:  python -I workflow_panel.py <subcommand> ...
 webui.json is written like AIMMS writes it (indent=2, non-ASCII as \\uXXXX, no
@@ -264,6 +298,7 @@ trailing newline, the file's own line endings), so it round-trips byte for byte.
 Before every write the current file is copied to webui.json.workflow-panel.bak.
 """
 import argparse
+import copy
 import json
 import re
 import sys
@@ -273,7 +308,7 @@ MAX_TOP = 10
 MAX_CHILDREN = 10
 DEFAULT_ICON = "aimms-lan"  # verified in a working example; pass --icons to choose others
 
-WORKFLOW_CONFIGURATION = {
+_CONFIGURATION = {  # template without prefix; use workflow_configuration()
     "literal": {
         "identifier": "WorkflowSteps",
         "slice": [
@@ -283,7 +318,7 @@ WORKFLOW_CONFIGURATION = {
         ],
     }
 }
-WORKFLOW_INFORMATION = {
+_INFORMATION = {  # template without prefix; use workflow_information()
     "aimms": {
         "contents": ["WorkflowDefinitions"],
         "slices": [
@@ -297,6 +332,24 @@ WORKFLOW_INFORMATION = {
         ],
     }
 }
+
+
+def _qualified(prefix, name):
+    return f"{prefix}::{name}" if prefix else name
+
+
+def workflow_configuration(prefix=""):
+    cfg = copy.deepcopy(_CONFIGURATION)
+    cfg["literal"]["identifier"] = _qualified(prefix, "WorkflowSteps")
+    return cfg
+
+
+def workflow_information(prefix=""):
+    info = copy.deepcopy(_INFORMATION)
+    name = _qualified(prefix, "WorkflowDefinitions")
+    info["aimms"]["contents"] = [name]
+    info["aimms"]["slices"][0]["identifier"] = name
+    return info
 
 
 # ---------------------------------------------------------------- helpers
@@ -418,15 +471,111 @@ def cmd_generate(a):
             print(f"# WARNING: [{par}] has {n} child steps, documentation recommends at most {MAX_CHILDREN}", file=sys.stderr)
 
 
+# ---------------------------------------------------------------- identifier prefix
+def enclosing_blocks(text, pos):
+    """The '{' blocks still open at text[pos], outermost first, as (kind, name, index of '{').
+    kind/name come from the header before the brace ('Module Foo {'); None when it has none
+    (attribute values such as 'Definition: {' have no header)."""
+    stack, in_s, i = [], None, 0
+    while i < pos:
+        c = text[i]
+        if in_s:
+            if c == in_s:
+                in_s = None
+        elif c in "\"'":
+            in_s = c
+        elif c == "!":
+            while i < pos and text[i] != "\n":
+                i += 1
+            continue
+        elif c == "{":
+            m = re.search(r"\b(\w+)\s+(\w+)\s*$", text[max(0, i - 200):i])
+            stack.append((m.group(1), m.group(2), i) if m else (None, None, i))
+        elif c == "}":
+            if stack:
+                stack.pop()
+        i += 1
+    return stack
+
+
+def _top_level(body):
+    """Body of a block without the contents of nested '{ }' blocks."""
+    out, depth, in_s, i = [], 0, None, 0
+    while i < len(body):
+        c = body[i]
+        if in_s:
+            if c == in_s:
+                in_s = None
+        elif c in "\"'":
+            in_s = c
+        elif c == "!":
+            while i < len(body) and body[i] != "\n":
+                i += 1
+            continue
+        elif c == "{":
+            depth += 1
+            i += 1
+            continue
+        elif c == "}":
+            depth -= 1
+            i += 1
+            continue
+        if depth == 0:
+            out.append(c)
+        i += 1
+    return "".join(out)
+
+
+def detect_prefix(ams_text):
+    """Return (prefix, note) from the module that declares WorkflowSteps; prefix is None
+    when it cannot be determined (note says why)."""
+    m = re.search(r"\bStringParameter\s+WorkflowSteps\s*\{", ams_text)
+    if not m:
+        return None, "WorkflowSteps is not declared in the .ams yet"
+    mods = [b for b in enclosing_blocks(ams_text, m.start()) if b[0] in ("Module", "LibraryModule")]
+    if not mods:
+        return "", "WorkflowSteps is declared outside any module, no prefix"
+    kind, name, brace = mods[-1]
+    pm = re.search(r"\bPrefix\s*:\s*(\w+)\s*;", _top_level(_block(ams_text, brace)))
+    if not pm:
+        return None, f"{kind} {name}, which declares WorkflowSteps, has no Prefix attribute"
+    note = f"from the Prefix of {kind} {name}"
+    if len(mods) > 1:
+        note += f" (nested in {mods[-2][1]}; check that this is the prefix you need, else pass --prefix)"
+    return pm.group(1), note
+
+
+def existing_prefix(data):
+    try:
+        ident = data["application"]["workflows.configuration"]["literal"]["identifier"]
+    except (KeyError, TypeError):
+        return ""
+    return ident.rpartition("::")[0] if isinstance(ident, str) else ""
+
+
+def resolve_prefix(a, data):
+    """Return (prefix, source); prefix is None when it cannot be determined.
+    Order: --prefix, the .ams, what webui.json already uses, none."""
+    if a.prefix is not None:
+        p = a.prefix[:-2] if a.prefix.endswith("::") else a.prefix
+        if not re.fullmatch(r"\w*", p):
+            sys.exit(f"error: invalid --prefix '{a.prefix}'")
+        return p, "from --prefix"
+    if a.ams:
+        return detect_prefix(Path(a.ams).read_text(encoding="utf-8-sig", errors="replace"))
+    return existing_prefix(data), "no --ams or --prefix given: kept what webui.json already uses"
+
+
 # ---------------------------------------------------------------- settings
-def normalise(data):
+def normalise(data, prefix=""):
     changed = []
     app = data.setdefault("application", {})
-    if app.get("workflows.configuration") != WORKFLOW_CONFIGURATION:
-        app["workflows.configuration"] = WORKFLOW_CONFIGURATION
+    cfg, info = workflow_configuration(prefix), workflow_information(prefix)
+    if app.get("workflows.configuration") != cfg:
+        app["workflows.configuration"] = cfg
         changed.append("application.workflows.configuration")
-    if app.get("workflows.information") != WORKFLOW_INFORMATION:
-        app["workflows.information"] = WORKFLOW_INFORMATION
+    if app.get("workflows.information") != info:
+        app["workflows.information"] = info
         changed.append("application.workflows.information")
     for key in ("aimms.widget.type", "layoutId"):
         if key in data and data[key] != {}:
@@ -437,7 +586,12 @@ def normalise(data):
 
 def cmd_settings(a):
     data = load(a.webui)
-    changed = normalise(data)
+    prefix, source = resolve_prefix(a, data)
+    if prefix is None:
+        sys.exit(f"error: cannot determine the identifier prefix: {source}. "
+                 "Fix that in the .ams, or pass --prefix (--prefix '' for none).")
+    print(f"prefix: '{prefix}' ({source})")
+    changed = normalise(data, prefix)
     if not changed:
         print("nothing to change; settings already in the exact format")
         return
@@ -614,11 +768,19 @@ def cmd_check(a):
     root = tree_root(data)
     slugs = {n["slug"] for n, _, _ in walk(root)}
 
+    prefix, source = resolve_prefix(a, data)
+    if prefix is None:
+        errs.append(f"cannot determine the identifier prefix: {source}; pass --prefix")
+        prefix = existing_prefix(data)
+    else:
+        print(f"INFO  identifier prefix '{prefix}' ({source})")
     app = data.get("application", {})
-    if app.get("workflows.configuration") != WORKFLOW_CONFIGURATION:
-        errs.append("application.workflows.configuration missing or not in the exact format (run 'settings')")
-    if app.get("workflows.information") != WORKFLOW_INFORMATION:
-        errs.append("application.workflows.information missing or not in the exact format (run 'settings')")
+    if app.get("workflows.configuration") != workflow_configuration(prefix):
+        errs.append("application.workflows.configuration missing or not in the exact format "
+                    f"for prefix '{prefix}' (run 'settings')")
+    if app.get("workflows.information") != workflow_information(prefix):
+        errs.append("application.workflows.information missing or not in the exact format "
+                    f"for prefix '{prefix}' (run 'settings')")
     for key in ("aimms.widget.type", "layoutId"):
         if key in data and data[key] != {}:
             errs.append(f"top-level '{key}' is not {{}}")
@@ -681,7 +843,11 @@ def main():
     s.add_argument("--indent", type=int, default=3, help="leading tabs in the snippet")
     s.add_argument("--out"); s.set_defaults(f=cmd_generate)
 
+    prefix_help = ("prefix of the module that declares WorkflowSteps, e.g. giim; '' for none "
+                   "(default: detected from --ams)")
     s = sub.add_parser("settings"); s.add_argument("webui")
+    s.add_argument("--ams", help="model .ams, to detect the prefix of the module that declares WorkflowSteps")
+    s.add_argument("--prefix", help=prefix_help)
     s.add_argument("--dry-run", action="store_true"); s.set_defaults(f=cmd_settings)
 
     s = sub.add_parser("unassign"); s.add_argument("webui")
@@ -692,7 +858,8 @@ def main():
     s.add_argument("--dry-run", action="store_true"); s.set_defaults(f=cmd_unassign)
 
     s = sub.add_parser("check"); s.add_argument("webui")
-    s.add_argument("--parent"); s.add_argument("--ams"); s.set_defaults(f=cmd_check)
+    s.add_argument("--parent"); s.add_argument("--ams")
+    s.add_argument("--prefix", help=prefix_help); s.set_defaults(f=cmd_check)
 
     a = ap.parse_args()
     a.f(a)
