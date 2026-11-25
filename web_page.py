@@ -1232,6 +1232,10 @@ class WebUI:
         # depend on the parameter also happening to drive some other widget's visibility.
         if content_lists_expected.get("compact"):
             webui_widget_contents['compact'] = { "literal": 1 }
+        # A multi line string scalar (WinUI layout MultipleLineEditField) has no label.
+        if content_lists_expected.get("multi_line"):
+            webui_widget_contents['contents.labels.visible'] = { "literal": 0 }
+            webui_widget_contents['multi.line'] = { "literal": 1 }
 
         webui_widget = {
             "widgets/"+widget_name:  webui_widget_contents
