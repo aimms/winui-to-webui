@@ -50,5 +50,10 @@ def winpage_scalar(webui: web_page.WebUI, aimms_model: Model, gii_dict: dict, co
         "grouped"    : 0 }
     info_dict = win_object_tools.investigate_contents(aimms_model, gii_dict, component_dict, webui_page_dict, page_name, winui_table_xml, content_lists_expected, stable_id)
     if info_dict != {}:
+        # A WinUI scalar string shown as a "MultipleLineEditField" has no label and edits over
+        # multiple lines; the WebUI equivalent is multi.line on, with the contents label hidden.
+        layout_xml = winui_table_xml.find("Layout")
+        if layout_xml is not None and (layout_xml.text or "").strip() == "MultipleLineEditField":
+            content_lists_expected["multi_line"] = 1
         area, title, visible_expr = win_object_tools.compute_layout_slot(aimms_model, gii_dict, component_dict, winui_table_xml, ancestor_info)
         webui.add_data_widget(aimms_model, gii_dict, webui_page_dict, info_dict, content_lists_expected, ancestor_info, stable_id, area, title, visible_expr)

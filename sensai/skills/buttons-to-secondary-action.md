@@ -1,7 +1,7 @@
 ---
 name: buttons-to-secondary-action
 description: Move some or all button widgets on an AIMMS WebUI page to the page's Secondary Actions (the page-action menu at the bottom right). The buttons are kept in the page's Unassigned widgets area; a StringParameter over webui::indexPageExtension/indexPageActionSpec and the secondarypageactions page setting are created. Use when the user asks to move, convert or replace buttons with secondary (page) actions, or mentions secondarypageactions, page actions, page extensions or indexPageActionSpec.
-allowed-tools: Bash(python -I *buttons_to_secondary_action.py *), Bash(git status *), Bash(git check-ignore *), Read, Grep, Glob, Edit, Write
+allowed-tools: Bash(python -I *buttons_to_secondary_action.py *), Bash(git rev-parse *), Bash(git status *), Bash(git check-ignore *), Bash(git diff *), Bash(git add *), Bash(git commit *), Read, Grep, Glob, Edit, Write
 ---
 
 # Buttons to secondary actions
@@ -91,13 +91,9 @@ Use it when the user asks to:
 
 ### Phase 1 — Inspect safely
 
-1. Check both files with `git status` and `git check-ignore`.
-2. If the files are not tracked, make clear that git cannot restore them.
-3. The helper already writes
-   `webui.json.buttons-to-secondary-action.bak` before each write.
-4. If the model file is not tracked, make a backup copy of the `.ams` before
-   editing it.
-5. Remind the user not to save from the WebUI editor while you work, because
+1. Decide how the user can undo the change: git mode or backup mode. See
+   [Undo: git or backups](#undo-git-or-backups).
+2. Remind the user not to save from the WebUI editor while you work, because
    WebUI can rewrite `webui.json`.
 
 ### Phase 2 — Preview exactly what will happen
@@ -206,6 +202,43 @@ still needs to confirm in AIMMS/WebUI that:
 - the icons render as expected,
 - the procedures run as intended.
 
+Then store the result as described in
+[Undo: git or backups](#undo-git-or-backups): offer a commit in git mode, or
+list the backup files in backup mode.
+
+## Undo: git or backups
+
+Decide the mode once, in Phase 1, from the two files this skill changes
+(`webui.json` and the model `.ams`):
+
+1. Run `git rev-parse --is-inside-work-tree` in the project folder, and
+   `git check-ignore -v <file>` and `git status --porcelain <file>` on both
+   files. Converted apps often sit in an ignored `work/` folder.
+2. **Git mode**: the folder is a git work tree, and neither file is ignored or
+   untracked (`??` in `git status --porcelain`).
+   - If either file has uncommitted changes, stop and tell the user. Ask them to
+     commit first, or offer to commit those changes for them with a message they
+     confirm. Continue on uncommitted files only when the user explicitly says so,
+     and warn that undoing then also undoes their own earlier changes.
+   - Git is the undo: `git restore <file>`, or
+     `git stash push --include-untracked` to put all changes aside.
+   - At the end, show `git diff --stat` and offer to commit both files with a
+     message such as `Page <slug>: buttons to secondary actions`. Run `git add`
+     on exactly those two files and `git commit` only on the user's yes. Never
+     commit other files, and never push.
+   - The helper still writes `webui.json.buttons-to-secondary-action.bak`. In
+     git mode it is not needed: tell the user it can be deleted, and do not
+     commit it.
+3. **Backup mode**: no git work tree, or a file is ignored or untracked.
+   - Tell the user plainly that git cannot restore these files.
+   - The helper copies `webui.json` to
+     `webui.json.buttons-to-secondary-action.bak` before each write. Before you
+     edit the `.ams`, copy it to `<name>.ams.buttons-to-secondary-action.bak`
+     next to it (Read, then Write the exact content). Do not overwrite an
+     existing `.ams` backup from an earlier run without asking.
+   - At the end, list the backup files and how to undo: copy each `.bak` back
+     over its original while AIMMS has the project closed or reloads it.
+
 ## Dynamic state
 
 A source button can have behavior that a secondary action does not copy
@@ -237,8 +270,9 @@ If dynamic behavior is important and not yet handled, report it as unfinished.
   Its binding did not end up in `Unassigned widgets`, or WebUI overwrote the
   file afterwards.
 - **Need to undo**
-  Drag the button back from Unassigned widgets and remove its action row, or
-  restore the `.bak` copy of `webui.json`.
+  Drag the button back from Unassigned widgets and remove its action row. Or,
+  in git mode, `git restore` both files; in backup mode, copy the `.bak` files
+  back over `webui.json` and the `.ams`.
 
 ## What to report
 
@@ -253,6 +287,8 @@ Always report:
 - which files changed,
 - what `check` found,
 - whether the model compiled,
+- whether the result was committed (git mode) or which backup files exist
+  (backup mode),
 - what still requires manual verification.
 
 ## Helper script (`buttons_to_secondary_action.py`)
