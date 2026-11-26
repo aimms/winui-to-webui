@@ -36,7 +36,9 @@ github-release:
       - "*.zip"
     expire_in: 1 week
   script:
-    - $ErrorActionPreference = "Stop"
+    # Do not set $ErrorActionPreference = "Stop" before the build: build_w2w.ps1 probes
+    # "import PyInstaller" with 2>$null, and Windows PowerShell turns that stderr into a
+    # terminating error under Stop. Stop is set in the publish step, after the build.
     - |
       if (-not $env:GITHUB_TOKEN) {
         Write-Error "GITHUB_TOKEN is empty. Set it in Settings > CI/CD > Variables. If it is Protected, also protect the release tags (Settings > Repository > Protected tags)."
