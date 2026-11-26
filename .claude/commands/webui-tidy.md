@@ -4,7 +4,7 @@ Uses WinUI screenshots and the preliminary `webui.json` to improve the WebUI lay
 
 ## 1. Determine the project directory
 
-- If the current working directory is inside the `711-winui-to-webui` repository (i.e. this skill's repository), ask the user for the path to the AIMMS project directory.
+- If the current working directory is inside the `winui-to-webui` repository (i.e. this skill's repository), ask the user for the path to the AIMMS project directory.
 - Otherwise use the current working directory.
 
 ## 2. Determine which pages to process

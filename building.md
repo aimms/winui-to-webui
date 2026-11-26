@@ -19,7 +19,7 @@ From the repository root:
 .\scripts\build_w2w.ps1
 ```
 
-The executable is written to `dist\w2w.exe`.
+The executable is written to `dist\WinUI_to_WebUI.exe`.
 
 `build_w2w.ps1`:
 1. Runs `uv sync` to create or update `.venv` from `pyproject.toml` and `uv.lock`.
@@ -52,7 +52,7 @@ To run the converter without building the exe, use the `.venv` from the reposito
 
 ```
 cd C:\path\to\your\project
-C:\path\to\711-winui-to-webui\.venv\Scripts\python.exe C:\path\to\711-winui-to-webui\main.py
+C:\path\to\winui-to-webui\.venv\Scripts\python.exe C:\path\to\winui-to-webui\main.py
 ```
 
 `main_dev.py` is a development entry point with hardcoded example paths; it is not part of the build.
