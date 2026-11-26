@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "0287-w2wpy"
-version = "0.1.0"
-description = "Add your description here"
+version = "1.0"
+description = "Converts the WinUI pages of an AIMMS project into WebUI pages and widgets."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -61,7 +61,6 @@ py-modules = [
 [tool.uv.workspace]
 members = [
     "scripts",
-    "examples/w2w0018",
 ]
 
 [project.scripts]

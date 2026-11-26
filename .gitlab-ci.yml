@@ -2,3 +2,54 @@ include:
   - project: 'aimms/user-support/templates/template-cicd'
     ref: main
     file: '.gitlab-ci-toolkit.yml'
+
+# ─────────────────────────────────────────
+# Overrides of the toolkit template for this repository.
+#
+# This toolkit is a Windows executable built from Python, not an AIMMS project:
+# it has no .aimms file. The template jobs below are adapted to that.
+# ─────────────────────────────────────────
+
+# The badge jobs read the AIMMS version from the .aimms file. There is none here.
+update-readme:
+  rules:
+    - when: never
+
+update-howto:
+  rules:
+    - when: never
+
+# The template's github-release zips the repository with git archive: source only,
+# because dist/ is in .gitignore. This job builds WinUI_to_WebUI.exe on a Windows
+# runner instead, and publishes it as <project>.zip, so the download link has the
+# same form as the other toolkits:
+#   https://github.com/aimms/winui-to-webui/releases/latest/download/winui-to-webui.zip
+# Requires: GITHUB_TOKEN with 'repo' scope (the same one the template uses).
+github-release:
+  tags:
+    - windows-docker
+  image: "${DOCKER_ACCESS_URL}/other/dockerdev/aimms-windows-vs2022:release-0.1.3-362"
+  timeout: 30 minutes
+  artifacts:
+    when: always
+    paths:
+      - "*.zip"
+    expire_in: 1 week
+  script:
+    - python -m pip install uv
+    - .\scripts\clean_w2w.ps1
+    - .\scripts\build_w2w.ps1
+    - |
+      if (-not (Test-Path dist\WinUI_to_WebUI.exe)) { Write-Error "dist\WinUI_to_WebUI.exe was not built"; exit 1 }
+      $name = $env:CI_PROJECT_NAME
+      $zip  = "$name.zip"
+      New-Item -ItemType Directory -Force -Path "package\$name" | Out-Null
+      Copy-Item dist\WinUI_to_WebUI.exe, README.md, LICENSE.md, usage.md "package\$name\"
+      Compress-Archive -Path "package\$name" -DestinationPath $zip -Force
+
+      $headers = @{ Authorization = "Bearer $env:GITHUB_TOKEN"; Accept = "application/vnd.github+json" }
+      $repo = "aimms/$name"
+      $body = @{ tag_name = $env:CI_COMMIT_TAG; name = "Release $env:CI_COMMIT_TAG"; draft = $false; prerelease = $false } | ConvertTo-Json
+      $release = Invoke-RestMethod -Method Post -Headers $headers -ContentType "application/json" -Body $body -Uri "https://api.github.com/repos/$repo/releases"
+      $uploadUrl = $release.upload_url -replace '\{\?name,label\}', ''
+      Invoke-RestMethod -Method Post -Headers $headers -ContentType "application/zip" -InFile $zip -Uri "$($uploadUrl)?name=$zip"

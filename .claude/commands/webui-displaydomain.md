@@ -6,7 +6,7 @@ In a converted project, a WebUI table does not show rows for identifiers without
 
 ## 1. Determine the project directory
 
-- If the current working directory is inside the `711-winui-to-webui` repository (i.e. this skill's repository), ask the user for the path to the AIMMS project directory.
+- If the current working directory is inside the `winui-to-webui` repository (i.e. this skill's repository), ask the user for the path to the AIMMS project directory.
 - Otherwise use the current working directory.
 
 Before writing, check that AIMMS is closed: no `aimms.exe` process and no `*.aimmslockfile` in the project folder.

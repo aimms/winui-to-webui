@@ -6,7 +6,7 @@ Runs `WinUI_to_WebUI.exe` on an AIMMS project to generate a preliminary `webui.j
 
 ## 1. Determine the project directory
 
-- If the current working directory is inside the `711-winui-to-webui` repository (i.e. this skill's repository), ask the user for the path to the AIMMS project directory.
+- If the current working directory is inside the `winui-to-webui` repository (i.e. this skill's repository), ask the user for the path to the AIMMS project directory.
 - Otherwise use the current working directory.
 
 ## 2. Find the .aimms file

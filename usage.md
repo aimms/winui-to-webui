@@ -4,10 +4,9 @@
 
 ## Prerequisites
 
-- `WinUI_to_WebUI.exe` — obtain a copy from your team or build it from source (see [building.md](building.md))
-- AIMMS model in AIMMS 26.8.1.2
-- **`WinUI_to_WebUI.exe`:** build it from source (see [building.md](building.md)) or obtain a copy from the AIMMS User Support Team.
-- **AIMMS 26.8:** `WinUI_to_WebUI` opens the project with the latest installed AIMMS 26.8.x.
+- **Windows.**
+- **`WinUI_to_WebUI.exe`:** it is in the zip file on the [releases page](https://github.com/aimms/winui-to-webui/releases), or build it from source (see [building.md](building.md)).
+- **AIMMS Developer 26.8** with a license: the converter opens the project with AIMMS. Tested with AIMMS 26.8.1.2.
 - **WebUI library:** a project that already references WebUI keeps its own version. A project without WebUI gets the WebUI repository library 26.13.1 added.
 
 
