@@ -4,7 +4,7 @@ block_cipher = None
 
 a = Analysis(
     ['main.py'],
-    pathex=[r'C:\u\s\nirvana\0287dev\0287-w2wpy'],
+    pathex=[],
     binaries=[],
     datas=[
         ('ModelEditAimmsPython', 'ModelEditAimmsPython'),
