@@ -71,7 +71,7 @@ def work_action_sequence_into_procedure(aimms_model: Model,
             else:
                 noOtherTypeActions += 1
         else:
-            converter_logging.exoticW([f"unkown entry type {str(some_action.tag)} in action sequence"],
+            converter_logging.exoticW([f"unknown entry type {str(some_action.tag)} in action sequence"],
                     component_dict, purpose, page_name)
 
     if ( noActions == 1 ) and ( noProcCalls == 1 ) and ( noOtherTypeActions == 0 ):
@@ -99,7 +99,7 @@ def work_action_sequence_into_procedure(aimms_model: Model,
                     procedure_run_enabled = 1
                     for sub_action in some_action:
                         if sub_action.tag == 'RunWhat' and str(sub_action.text) != 'SpecificProcecure':
-                            converter_logging.exoticW([f"unkown entry type {str(some_action.tag)} in action sequence"],
+                            converter_logging.exoticW([f"unknown entry type {str(some_action.tag)} in action sequence"],
                                 component_dict, purpose, page_name)
                             procedure_run_enabled = 0
                         if ( sub_action.tag == 'Procedure' ) and ( procedure_run_enabled == 1 ):
